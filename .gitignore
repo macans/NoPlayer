@@ -1,0 +1,11 @@
+*.sln
+*.sdf
+*.suo
+*.vcxproj
+*.filters
+*.user
+*.opensdf
+GeneratedFiles/*
+debug/*
+x64/
+
