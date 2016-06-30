@@ -25,4 +25,4 @@ HEADERS  += mainwindow.h \
     controlwidget.h \
     playlistwidget.h
 
-FORMS    += mainwindow.ui
+FORMS    +=
