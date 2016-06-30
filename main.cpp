@@ -1,12 +1,13 @@
 ﻿#include "mainwindow.h"
 #include "playcontrols.h"
-
+#include "menuwidget.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
+    MenuWidget w;
+    //MainWindow w;
 	//PlayControls w;
     w.show();
 
