@@ -78,3 +78,4 @@ void MusicWidget::createwidgets(){
     layout->addWidget(piclabel, 2,Qt::AlignCenter);
     layout->addLayout(musicLayout);
 }
+

@@ -4,6 +4,7 @@
 #
 #-------------------------------------------------
 
+
 QT       += core gui multimedia multimediawidgets network script widgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -13,16 +14,26 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     musicwidget.cpp \
     menuwidget.cpp \
     controlwidget.cpp \
-    playlistwidget.cpp
+    playlistmodel.cpp \
+    videowidget.cpp \
+    playcontrols.cpp \
+    about_ui.cpp
+
 
 HEADERS  += mainwindow.h \
     musicwidget.h \
     menuwidget.h \
     controlwidget.h \
-    playlistwidget.h
+    playlistmodel.h \
+    videowidget.h \
+    playcontrols.h \
+    about_ui.h
 
-FORMS    +=
+
+
+FORMS    += controlwidget.ui \
+    about_ui.ui
