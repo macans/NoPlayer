@@ -35,16 +35,33 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 	playlistButton = new QToolButton(this);
 	playlistButton->setWindowIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
 	connect(playlistButton, SIGNAL(clicked()), this, SIGNAL(playlistButtonClicked()));
-	QBoxLayout *layout = new QHBoxLayout;
-	layout->setMargin(0);
-	layout->addWidget(openButton);
-	layout->addWidget(playlistButton);
-	layout->addWidget(stopButton);
-	layout->addWidget(previousButton);
-	layout->addWidget(playButton);
-	layout->addWidget(nextButton);
-	layout->addWidget(muteButton);
-	layout->addWidget(volumeSlider);
+	
+	controlButton = new QToolButton(this);
+	controlButton->setWindowIcon(style()->standardIcon(QStyle::SP_DialogOkButton));
+	connect(controlButton, SIGNAL(clicked()), this, SIGNAL(controlButtonClicked()));
+
+	slider = new QSlider(Qt::Horizontal, this);
+	connect(slider, SIGNAL(sliderMoved(int)), this, SIGNAL(seek(int)));
+	labelDuration = new QLabel(this);
+	QBoxLayout *slidersLayout = new QHBoxLayout;
+	slidersLayout->addWidget(slider, 2);
+	slidersLayout->addWidget(muteButton);
+	slidersLayout->addWidget(volumeSlider);
+
+	QBoxLayout *widgetsLayout = new QHBoxLayout;
+	widgetsLayout->setMargin(0);
+	widgetsLayout->addWidget(playButton);
+	widgetsLayout->addWidget(stopButton);
+	widgetsLayout->addWidget(previousButton);
+	widgetsLayout->addWidget(nextButton);
+	widgetsLayout->addWidget(openButton);
+	widgetsLayout->addWidget(labelDuration);
+	widgetsLayout->addWidget(playlistButton);
+	widgetsLayout->addWidget(controlButton);
+
+	QBoxLayout *layout = new QVBoxLayout;
+	layout->addLayout(slidersLayout);
+	layout->addLayout(widgetsLayout);
 	setLayout(layout);
 }
 
@@ -125,6 +142,42 @@ void PlayControls::setMuted(bool muted)
 			? QStyle::SP_MediaVolumeMuted
 			: QStyle::SP_MediaVolume));
 	}
+}
+
+void PlayControls::setDuration(qint64 duration)
+{
+	if (slider){
+		this->duration = duration;
+		slider->setRange(0, duration / 1000);
+	}
+}
+
+void PlayControls::positionChanged(qint64 progress)
+{
+	if (!slider->isSliderDown()) {
+		slider->setValue(progress / 1000);
+	}
+	updateDurationInfo(progress / 1000);
+}
+
+void PlayControls::updateDurationInfo(qint64 currentInfo)
+{
+	QString tStr;
+	if (currentInfo || duration) {
+		QTime currentTime((currentInfo / 3600) % 60, (currentInfo / 60) % 60, currentInfo % 60, (currentInfo * 1000) % 1000);
+		QTime totalTime((duration / 3600) % 60, (duration / 60) % 60, duration % 60, (duration * 1000) % 1000);
+		QString format = "mm:ss";
+		if (duration > 3600)
+			format = "hh:mm:ss";
+		tStr = currentTime.toString(format) + " / " + totalTime.toString(format);
+	}
+	labelDuration->setText(tStr);
+}
+
+void PlayControls::durationChanged(qint64 duration)
+{
+	this->duration = duration / 1000;
+	slider->setMaximum(duration / 1000);
 }
 
 

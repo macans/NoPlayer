@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+ï»¿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -7,29 +7,30 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	playlistState = false;
 	mousePressed = false;
+	controlState = false;
 	player = new QMediaPlayer(this);
 	playlist = new QMediaPlaylist();
 	player->setPlaylist(playlist);
 	//player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
 
-	//²¥·ÅÊÓÆµ
+	//æ’­æ”¾è§†é¢‘
 	playWidget = new VideoWidget(this); 
 	player->setVideoOutput((QVideoWidget*)playWidget);
 	
 	player->setVolume(50);
 	player->play();
-	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 
 	playlistModel = new PlaylistModel();
 	playlistModel->setPlaylist(playlist);
 
-	playlistView = new QListView( );
+	playlistView = new QListView();
 	playlistView->setModel(playlistModel);
 	playlistView->setCurrentIndex(playlistModel->index(playlist->currentIndex(), 0));
 	connect(playlistView, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
-	
-	//ÏÂ·½¿ØÖÆ¿é
-	PlayControls *controls = new PlayControls(this);
+	connect(playlistView, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(playlistButtonClicked()));
+	//ä¸‹æ–¹æ§åˆ¶å—
+	controls = new PlayControls(this);
+	controls->setDuration(player->duration());
 	controls->setVolume(player->volume());
 	controls->setState(player->state());
 	connect(controls, SIGNAL(play()), player, SLOT(play()));
@@ -43,19 +44,36 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(controls, SIGNAL(changeVolume(int)), player, SLOT(setVolume(int)));
 	connect(controls, SIGNAL(changeMuting(bool)), player, SLOT(setMuted(bool)));
 	connect(controls, SIGNAL(playlistButtonClicked()), this, SLOT(playlistButtonClicked()));
+	connect(controls, SIGNAL(controlButtonClicked()), this, SLOT(controlButtonClicked()));
+	connect(controls, SIGNAL(seek(int)), this, SLOT(seek(int)));
 	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
 	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
 	//controls->hide();
-	//²¼¾Ö
-	QBoxLayout *displayLayout = new QHBoxLayout;
+
+	controlWidget = new ControlWidget;
+	connect(controlWidget, SIGNAL(controlWidgetClosed()), this, SLOT(controlButtonClicked()));
+	controlWidget->hide();
+	//connect(controlWidget, SIGNAL())
+	connect(controlWidget, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
+	connect(controlWidget, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
+	connect(controlWidget, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
+
+	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
+	connect(player, SIGNAL(positionChanged(qint64)), controls, SLOT(positionChanged(qint64)));
+	connect(player, SIGNAL(durationChanged(qint64)), controls, SLOT(durationChanged(qint64)));
+
+	//å¸ƒå±€
+	QHBoxLayout *displayLayout = new QHBoxLayout;
 	displayLayout->addWidget(playWidget);
 	playlistView->hide();
-	QBoxLayout *controlLayout = new QHBoxLayout;
+
+	QHBoxLayout *controlLayout = new QHBoxLayout;
 	controlLayout->addWidget(controls);
+	//controlLayout->addStretch(1);
 
 	QBoxLayout *layout = new QVBoxLayout;
 	layout->setMargin(0);
-	layout->addLayout(displayLayout);
+	layout->addLayout(displayLayout, 2);
 	layout->addLayout(controlLayout);
 	this->setLayout(layout);
 	
@@ -98,12 +116,6 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 	//updateWindowSize();
 }
 
-void MainWindow::durationChanged(qint64 duration)
-{
-	this->duration = duration / 1000;
-	const QMediaContent x = player->currentMedia();
-	this->wndSize = player->currentMedia().canonicalResource().resolution();
-}
 
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
@@ -185,6 +197,9 @@ void MainWindow::openFile()
 {
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
 	addToPlaylist(fileNames);
+	int p = playlist->mediaCount();
+	playlist->setCurrentIndex(p);
+	player->play();
 }
 
 void MainWindow::addToPlaylist(QStringList fileNames)
@@ -216,7 +231,25 @@ void MainWindow::jump(const QModelIndex &index)
 	}
 }
 
+void MainWindow::controlButtonClicked()
+{
+	if (controlState){
+		controlWidget->hide();
+		controlState = false;
+	}
+	else{
+		controlWidget->show();
+		controlState = true;
+	}
+}
+
+void MainWindow::seek(int seconds)
+{
+	player->setPosition(seconds * 1000);
+}
+
+
 
 /*
-	VideoWidget ´óĞ¡ÓëÖ÷´°¿Ú±£³ÖÒ»ÖÂ
+	VideoWidget å¤§å°ä¸ä¸»çª—å£ä¿æŒä¸€è‡´
 */

@@ -13,7 +13,7 @@
 #include "videowidget.h"
 #include "playcontrols.h"
 #include "playlistmodel.h"
-
+#include "ControlWidget.h"
 namespace Ui {
 class MainWindow;
 }
@@ -38,25 +38,27 @@ public:
 private slots:
 	void playlistButtonClicked();
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
-	void durationChanged(qint64 duration);
 	void nextClicked();
 	void previousClicked();
 	void fastforword();
 	void rewind();
 	void openFile();
+	void controlButtonClicked();
 	void jump(const QModelIndex &index);
+	void seek(int seconds);
 private:
 	QWidget *playWidget;
 	QMediaPlayer *player;
 	QMediaPlaylist *playlist;
 	QAbstractItemView *playlistView;
 	PlaylistModel *playlistModel;
-
+	PlayControls *controls;
+	ControlWidget *controlWidget;
     Ui::MainWindow *ui;
-	qint64 duration;
 	QSize wndSize;
 	bool mousePressed;
 	bool playlistState;
+	bool controlState;
 };
 
 #endif // MAINWINDOW_H

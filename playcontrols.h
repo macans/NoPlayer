@@ -9,6 +9,8 @@
 #include <QToolButton>
 #include <QStyle>
 #include <QSlider>
+#include <QLabel>
+#include <QTime>
 #include <QBoxLayout>
 
 class PlayControls : public QWidget
@@ -31,11 +33,16 @@ signals :
 	void changeVolume(int);
 	void changeMuting(bool);
 	void playlistButtonClicked();
-
+	void controlButtonClicked();
+	void seek(int progress);
 public slots:
 	void setState(const QMediaPlayer::State state);
 	void setVolume(int volume);
 	void setMuted(bool muted);
+	void setDuration(qint64 duration);
+	void positionChanged(qint64 progress);
+	void durationChanged(qint64 duration);
+	void updateDurationInfo(qint64 currentInfo);
 
 private slots:
 	void playClicked();
@@ -54,8 +61,11 @@ private:
 	QAbstractButton *playlistButton;
 	QAbstractButton *controlButton;
 	QAbstractSlider *volumeSlider;
+	QSlider *slider;
+	QLabel *labelDuration;
 	QMediaPlayer::State playerState;
 	bool playerMuted;
+	qint64 duration;
 };
 
 #endif // PLAYCTRLWIDGET_H

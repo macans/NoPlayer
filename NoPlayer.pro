@@ -29,5 +29,4 @@ HEADERS  += mainwindow.h \
     videowidget.h \
     playcontrols.h
 
-FORMS    += mainwindow.ui \
-    controlwidget.ui
+FORMS    += mainwindow.ui
