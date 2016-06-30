@@ -3,8 +3,15 @@
 
 #include <QWidget>
 #include <QMediaPlayer>
+#include <QMediaPlaylist>
 #include <QVideoWidget>
 #include <QMouseEvent>
+#include <QBoxLayout>
+#include <QAbstractItemView>
+#include <QListView>
+#include "videowidget.h"
+#include "playcontrols.h"
+#include "playlistmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,15 +24,34 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    void mousePressEvent(QMouseEvent *event);
+	//继承的响应事件
+	void resizeEvent(QResizeEvent *event);
+	void mouseMoveEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event);
+	void mouseReleaseEvent(QMouseEvent *event);
+	
+	//自定义函数
+    void updateWindowSize();
+	bool isPosInRect(const QPoint &pos, const QRect &rect);
 
-    void initWindowSize();
+private slots:
+	void durationChanged(qint64 duration);
+	void nextClicked();
+	void previousClicked();
+	void fastforword();
+	void rewind();
 
 private:
 	QMediaPlayer *player;
+	QMediaPlaylist *playlist;
+	QAbstractItemView *playlistView;
+	PlaylistModel *playlistModel;
 	QVideoWidget *videoWidget;
 
     Ui::MainWindow *ui;
+	qint64 duration;
+	QSize wndSize;
+	bool mousePressed;
 };
 
 #endif // MAINWINDOW_H

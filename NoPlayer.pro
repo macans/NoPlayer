@@ -17,12 +17,17 @@ SOURCES += main.cpp\
     musicwidget.cpp \
     menuwidget.cpp \
     controlwidget.cpp \
-    playlistwidget.cpp
+    playlistwidget.cpp \
+    videowidget.cpp \
+    playcontrols.cpp
 
 HEADERS  += mainwindow.h \
     musicwidget.h \
     menuwidget.h \
     controlwidget.h \
-    playlistwidget.h
+    playlistwidget.h \
+    videowidget.h \
+    playcontrols.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    controlwidget.ui
