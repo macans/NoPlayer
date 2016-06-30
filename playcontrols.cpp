@@ -22,7 +22,7 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 	
 	openButton = new QToolButton(this);
 	openButton->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
-	connect(openButton, SIGNAL(clicked()), this, SLOT(open()));
+	connect(openButton, SIGNAL(clicked()), this, SIGNAL(open()));
 
 	muteButton = new QToolButton(this);
 	muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
@@ -34,7 +34,7 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 
 	playlistButton = new QToolButton(this);
 	playlistButton->setWindowIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
-	connect(playlistButton, SIGNAL(clicked()), this, SLOT(playlistButtonClicked()));
+	connect(playlistButton, SIGNAL(clicked()), this, SIGNAL(playlistButtonClicked()));
 	QBoxLayout *layout = new QHBoxLayout;
 	layout->setMargin(0);
 	layout->addWidget(openButton);
@@ -127,8 +127,4 @@ void PlayControls::setMuted(bool muted)
 	}
 }
 
-void PlayControls::playlistButtonClicked()
-{
-	
-}
 

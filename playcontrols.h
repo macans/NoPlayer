@@ -19,15 +19,18 @@ public:
 	
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
 signals :
+
 	void play();
 	void pause();
 	void stop();
 	void next();
 	void previous();
+	void open();
 	void fastforword();
 	void rewind();
 	void changeVolume(int);
 	void changeMuting(bool);
+	void playlistButtonClicked();
 
 public slots:
 	void setState(const QMediaPlayer::State state);
@@ -37,7 +40,7 @@ public slots:
 private slots:
 	void playClicked();
 	void muteClicked();
-	void playlistButtonClicked();
+	
 	void  mousePressEvent(QMouseEvent *event);
 
 

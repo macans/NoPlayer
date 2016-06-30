@@ -5,10 +5,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MainWindow)
 {
+	playlistState = false;
+	mousePressed = false;
 	player = new QMediaPlayer(this);
 	playlist = new QMediaPlaylist();
 	player->setPlaylist(playlist);
-	player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
+	//player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
 
 	//播放视频
 	playWidget = new VideoWidget(this); 
@@ -21,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	playlistModel = new PlaylistModel();
 	playlistModel->setPlaylist(playlist);
 
-	playlistView = new QListView(this);
+	playlistView = new QListView( );
 	playlistView->setModel(playlistModel);
 	playlistView->setCurrentIndex(playlistModel->index(playlist->currentIndex(), 0));
 	connect(playlistView, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
@@ -37,23 +39,26 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(controls, SIGNAL(previous()), player, SLOT(previousClicked()));
 	connect(controls, SIGNAL(fastforword()), this, SLOT(fastforword()));
 	connect(controls, SIGNAL(rewind()), this, SLOT(rewind()));
+	connect(controls, SIGNAL(open()), this, SLOT(openFile()));
 	connect(controls, SIGNAL(changeVolume(int)), player, SLOT(setVolume(int)));
 	connect(controls, SIGNAL(changeMuting(bool)), player, SLOT(setMuted(bool)));
-
+	connect(controls, SIGNAL(playlistButtonClicked()), this, SLOT(playlistButtonClicked()));
 	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
 	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
-	controls->hide();
+	//controls->hide();
 	//布局
 	QBoxLayout *displayLayout = new QHBoxLayout;
 	displayLayout->addWidget(playWidget);
 	playlistView->hide();
+	QBoxLayout *controlLayout = new QHBoxLayout;
+	controlLayout->addWidget(controls);
 
 	QBoxLayout *layout = new QVBoxLayout;
 	layout->setMargin(0);
 	layout->addLayout(displayLayout);
-
+	layout->addLayout(controlLayout);
 	this->setLayout(layout);
-	//layout->addLayout(controlLayout);
+	
 	
 	this->mousePressed = false;
 	this->setWindowTitle("NoPlayer");
@@ -162,6 +167,53 @@ void MainWindow::mediaStatusChanged(QMediaPlayer::MediaStatus status)
 		this->resize(sz);
 	}
 	qDebug() << player->media().canonicalResource().resolution();
+}
+
+void MainWindow::playlistButtonClicked()
+{
+	if (playlistState){
+		playlistView->hide();
+		playlistState = false;
+	}
+	else{
+		playlistView->show();
+		playlistState = true;
+	}
+}
+
+void MainWindow::openFile()
+{
+	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
+	addToPlaylist(fileNames);
+}
+
+void MainWindow::addToPlaylist(QStringList fileNames)
+{
+	foreach(QString const &argument, fileNames) {
+		QFileInfo fileInfo(argument);
+		if (fileInfo.exists()) {
+			QUrl url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+			if (fileInfo.suffix().toLower() == QLatin1String("m3u")) {
+				playlist->load(url);
+			}
+			else
+				playlist->addMedia(url);
+		}
+		else {
+			QUrl url(argument);
+			if (url.isValid()) {
+				playlist->addMedia(url);
+			}
+		}
+	}
+}
+
+void MainWindow::jump(const QModelIndex &index)
+{
+	if (index.isValid()){
+		playlist->setCurrentIndex(index.row());
+		player->play();
+	}
 }
 
 

@@ -9,6 +9,7 @@
 #include <QBoxLayout>
 #include <QAbstractItemView>
 #include <QListView>
+#include <QFileDialog>
 #include "videowidget.h"
 #include "playcontrols.h"
 #include "playlistmodel.h"
@@ -33,15 +34,17 @@ public:
 	//自定义函数
     void updateWindowSize();
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
-
+	void addToPlaylist(QStringList fileNames);
 private slots:
+	void playlistButtonClicked();
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void durationChanged(qint64 duration);
 	void nextClicked();
 	void previousClicked();
 	void fastforword();
 	void rewind();
-
+	void openFile();
+	void jump(const QModelIndex &index);
 private:
 	QWidget *playWidget;
 	QMediaPlayer *player;
@@ -53,6 +56,7 @@ private:
 	qint64 duration;
 	QSize wndSize;
 	bool mousePressed;
+	bool playlistState;
 };
 
 #endif // MAINWINDOW_H
