@@ -1,14 +1,16 @@
 ﻿#include "mainwindow.h"
 #include "playcontrols.h"
 #include "controlwidget.h"
+#include "menuwidget.h"
 #include <QApplication>
 #include <QTextCodec>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
 	MainWindow w;
-	//PlayControls w;
+    //PlayControls w;
 	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
 	QTextCodec::setCodecForLocale(codec);
 	//ControlWidget w;
