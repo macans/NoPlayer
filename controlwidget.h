@@ -1,4 +1,4 @@
-﻿#ifndef CONTROLWIDGET_H
+#ifndef CONTROLWIDGET_H
 #define CONTROLWIDGET_H
 
 #include <QWidget>

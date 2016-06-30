@@ -163,4 +163,3 @@ void MenuWidget::QuitTheMedia()
     exit(0);
 }
 
-

@@ -14,6 +14,7 @@
 #include "playcontrols.h"
 #include "playlistmodel.h"
 #include "ControlWidget.h"
+
 namespace Ui {
 class MainWindow;
 }

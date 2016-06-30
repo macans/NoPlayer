@@ -1,4 +1,4 @@
-﻿#include "controlwidget.h"
+#include "controlwidget.h"
 
 #include <QTabWidget>
 #include <QHBoxLayout>

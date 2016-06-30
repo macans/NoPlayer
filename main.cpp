@@ -1,9 +1,13 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include "playcontrols.h"
 #include "controlwidget.h"
 #include "menuwidget.h"
+#include "musicwidget.h"
+
 #include <QApplication>
 #include <QTextCodec>
+#include <QMediaPlaylist>
+
 
 int main(int argc, char *argv[])
 {
@@ -37,3 +41,13 @@ int main(int argc, char *argv[])
 	待讨论
 		打开最近播放
 */
+   /* QMediaPlaylist *playlist = new QMediaPlaylist;
+    QMediaPlayer *musicPlayer = new QMediaPlayer;
+    playlist->addMedia(QUrl::fromLocalFile("E:\\QTproject\\Adele - Hello.mp3"));
+    playlist->addMedia(QUrl::fromLocalFile("E:\\QTproject\\test.mp3"));
+    playlist->addMedia(QUrl::fromLocalFile("E:\\QTproject\\music.mp3"));
+    musicPlayer->setPlaylist(playlist);
+    MusicWidget w(0,musicPlayer);
+    w.show();
+    return a.exec();*/
+

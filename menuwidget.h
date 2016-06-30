@@ -1,10 +1,10 @@
 #ifndef MENUWIDGET_H
 #define MENUWIDGET_H
+
 #include <QMediaPlayer>
 #include <QWidget>
 #include <QToolButton>
 #include <QMouseEvent>
-
 
 
 class MenuWidget : public QWidget

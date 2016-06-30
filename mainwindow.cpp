@@ -1,4 +1,4 @@
-﻿#include "mainwindow.h"
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -83,7 +83,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	//this->setWindowIcon();
 	//this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
-
 }
 
 MainWindow::~MainWindow()
@@ -253,3 +252,4 @@ void MainWindow::seek(int seconds)
 /*
 	VideoWidget 大小与主窗口保持一致
 */
+
