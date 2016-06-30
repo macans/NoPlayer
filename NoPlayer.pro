@@ -37,3 +37,8 @@ HEADERS  += mainwindow.h \
 
 FORMS    += controlwidget.ui \
     about_ui.ui
+
+DISTFILES +=
+
+RESOURCES += \
+    images.qrc
