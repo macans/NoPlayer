@@ -15,9 +15,6 @@
 #include "playlistmodel.h"
 #include "ControlWidget.h"
 
-namespace Ui {
-class MainWindow;
-}
 
 class MainWindow : public QWidget
 {
@@ -55,7 +52,6 @@ private:
 	PlaylistModel *playlistModel;
 	PlayControls *controls;
 	ControlWidget *controlWidget;
-    Ui::MainWindow *ui;
 	QSize wndSize;
 	bool mousePressed;
 	bool playlistState;

@@ -1,9 +1,7 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::MainWindow)
+    QWidget(parent)
 {
 	playlistState = false;
 	mousePressed = false;
@@ -87,7 +85,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)

@@ -34,6 +34,5 @@ HEADERS  += mainwindow.h \
     about_ui.h
 
 
-FORMS    += mainwindow.ui \
-    controlwidget.ui \
+FORMS    += controlwidget.ui \
     about_ui.ui

@@ -174,7 +174,8 @@ void ControlWidget::fontshowFUN(){
 
 void ControlWidget::zimushowFUN()
 {
-	QString filename = QFileDialog::getOpenFileName(this, tr("文件对话框"), "/", tr("视频文件(*mp4)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("打开文件"), "/", tr("字幕(*srt)"));
+    //QString filename = QFileDialog::getOpenFileName(this, tr("文件对话框"), "/", tr("视频文件(*mp4)"));
 }
 
 void ControlWidget::doSome()
