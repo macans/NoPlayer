@@ -2,11 +2,18 @@
 #define PLAYLISTWIDGET_H
 
 #include <QAbstractItemModel>
+#include <QMediaPlaylist>
+#include <QFileInfo>
 
 class PlaylistModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
+	enum Column
+	{
+		Title = 0,
+		ColumnCount
+	};
     explicit PlaylistModel(QObject *parent = 0);
 	int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -21,6 +28,7 @@ public slots:
 
 private:
 	QMediaPlaylist *m_playlist;
+	QMap<QModelIndex, QVariant> m_data;
 };
 
 #endif // PLAYLISTWIDGET_H

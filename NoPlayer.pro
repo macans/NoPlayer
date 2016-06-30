@@ -17,7 +17,7 @@ SOURCES += main.cpp\
     musicwidget.cpp \
     menuwidget.cpp \
     controlwidget.cpp \
-    playlistwidget.cpp \
+    playlistmodel.cpp \
     videowidget.cpp \
     playcontrols.cpp
 
@@ -25,7 +25,7 @@ HEADERS  += mainwindow.h \
     musicwidget.h \
     menuwidget.h \
     controlwidget.h \
-    playlistwidget.h \
+    playlistmodel.h \
     videowidget.h \
     playcontrols.h
 

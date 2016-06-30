@@ -20,7 +20,7 @@ int PlaylistModel::columnCount(const QModelIndex &parent /*= QModelIndex()*/) co
 	return !parent.isValid() ? 1 : 0;
 }
 
-QT_NAMESPACE::QModelIndex PlaylistModel::index(int row, int column, const QModelIndex &parent /*= QModelIndex()*/) const
+QModelIndex PlaylistModel::index(int row, int column, const QModelIndex &parent /*= QModelIndex()*/) const
 {
 	return m_playlist && !parent.isValid()
 		&& row >= 0 && row < m_playlist->mediaCount()

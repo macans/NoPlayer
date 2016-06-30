@@ -8,27 +8,30 @@ MainWindow::MainWindow(QWidget *parent) :
 	player = new QMediaPlayer(this);
 	playlist = new QMediaPlaylist();
 	player->setPlaylist(playlist);
+	player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
+
 	//播放视频
-    videoWidget = new VideoWidget(this);
-    player->setVideoOutput(videoWidget);
-    videoWidget->show();
+	playWidget = new VideoWidget(this); 
+	player->setVideoOutput((QVideoWidget*)playWidget);
+	
+	player->setVolume(50);
+	player->play();
+	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 
 	playlistModel = new PlaylistModel();
 	playlistModel->setPlaylist(playlist);
-	playlist->setCurrentIndex(playlistModel->index(playlist->currentIndex(), 0));
 
 	playlistView = new QListView(this);
 	playlistView->setModel(playlistModel);
-	player->setVolume(50);
-    player->play();
-
+	playlistView->setCurrentIndex(playlistModel->index(playlist->currentIndex(), 0));
+	connect(playlistView, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
+	
 	//下方控制块
 	PlayControls *controls = new PlayControls(this);
 	controls->setVolume(player->volume());
 	controls->setState(player->state());
 	connect(controls, SIGNAL(play()), player, SLOT(play()));
 	connect(controls, SIGNAL(pause()), player, SLOT(pause()));
-	//connect(controls, SIGNAL(pause()), this, SLOT(pauseSlot()));
 	connect(controls, SIGNAL(stop()), player, SLOT(stop()));
 	connect(controls, SIGNAL(next()), player, SLOT(nextClicked()));
 	connect(controls, SIGNAL(previous()), player, SLOT(previousClicked()));
@@ -39,20 +42,25 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
 	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
-	controls->show();
-
+	controls->hide();
 	//布局
-	QBoxLayout *layout = new QVBoxLayout(this);
-	layout->setMargin(0);
-	layout->addWidget(videoWidget);
-	layout->addWidget(controls);
+	QBoxLayout *displayLayout = new QHBoxLayout;
+	displayLayout->addWidget(playWidget);
+	playlistView->hide();
 
-	ui->setupUi(this);
+	QBoxLayout *layout = new QVBoxLayout;
+	layout->setMargin(0);
+	layout->addLayout(displayLayout);
+
+	this->setLayout(layout);
+	//layout->addLayout(controlLayout);
+	
 	this->mousePressed = false;
 	this->setWindowTitle("NoPlayer");
 	//this->setWindowIcon();
 	//this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
+
 }
 
 MainWindow::~MainWindow()
@@ -73,8 +81,8 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 void MainWindow::updateWindowSize()
 {
 	QRect rc = this->geometry();
-	QRect rc1 = videoWidget->geometry();
-	videoWidget->setGeometry(rc);
+	QRect rc1 = playWidget->geometry();
+	playWidget->setGeometry(rc);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event)
@@ -144,6 +152,16 @@ void MainWindow::fastforword()
 void MainWindow::rewind()
 {
 
+}
+
+void MainWindow::mediaStatusChanged(QMediaPlayer::MediaStatus status)
+{
+	if (player->isMetaDataAvailable()){
+		qDebug() << player->metaData("Resolution");
+		QSize sz = player->metaData("Resolution").toSize();
+		this->resize(sz);
+	}
+	qDebug() << player->media().canonicalResource().resolution();
 }
 
 

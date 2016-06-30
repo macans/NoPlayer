@@ -35,6 +35,7 @@ public:
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
 
 private slots:
+	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void durationChanged(qint64 duration);
 	void nextClicked();
 	void previousClicked();
@@ -42,11 +43,11 @@ private slots:
 	void rewind();
 
 private:
+	QWidget *playWidget;
 	QMediaPlayer *player;
 	QMediaPlaylist *playlist;
 	QAbstractItemView *playlistView;
 	PlaylistModel *playlistModel;
-	QVideoWidget *videoWidget;
 
     Ui::MainWindow *ui;
 	qint64 duration;

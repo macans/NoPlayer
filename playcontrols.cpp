@@ -37,6 +37,8 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 	connect(playlistButton, SIGNAL(clicked()), this, SLOT(playlistButtonClicked()));
 	QBoxLayout *layout = new QHBoxLayout;
 	layout->setMargin(0);
+	layout->addWidget(openButton);
+	layout->addWidget(playlistButton);
 	layout->addWidget(stopButton);
 	layout->addWidget(previousButton);
 	layout->addWidget(playButton);
@@ -129,5 +131,4 @@ void PlayControls::playlistButtonClicked()
 {
 	
 }
-
 

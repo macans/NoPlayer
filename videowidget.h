@@ -2,6 +2,7 @@
 #define VIDEOWIDGET_H
 
 #include <QVideoWidget>
+#include <QMouseEvent>
 
 class VideoWidget : public QVideoWidget
 {
@@ -12,6 +13,8 @@ public:
 signals:
 
 public slots:
+protected:
+	void mouseDoubleClickEvent(QMouseEvent *event);
 };
 
 #endif // VIDEOWIDGET_H
