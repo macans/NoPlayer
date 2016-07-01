@@ -42,11 +42,13 @@ void MusicWidget::updateInfo(){
     //获取专辑图片
     QImage *img=new QImage;
     QImage *img2=new QImage;
-     *img =player->metaData("ThumbnailImage").value<QImage>();
-    //*img2=img->scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio);
-    piclabel->setPixmap(QPixmap::fromImage(*img));
+    *img =player->metaData("ThumbnailImage").value<QImage>();
     *img2=img->scaled(70,70,Qt::KeepAspectRatio);
+    //*img2=img->scaled(ui->label->width(),ui->label->height(),Qt::KeepAspectRatio);
+    if(img->bits()!=NULL){
+    piclabel->setPixmap(QPixmap::fromImage(*img));
     piclabel2->setPixmap(QPixmap::fromImage(*img2));
+    }
 }
 
 void MusicWidget::updatePosition(qint64 position){
@@ -60,8 +62,16 @@ void MusicWidget::updatePosition(qint64 position){
 }
 
 void MusicWidget::createwidgets(){
+
     piclabel = new QLabel(this);
     piclabel2 = new QLabel(this);
+
+    localimg=new QImage(":/image/logo.png");
+    QImage *img2=new QImage;
+    piclabel->setPixmap(QPixmap::fromImage(*localimg));
+    *img2=localimg->scaled(70,70,Qt::KeepAspectRatio);
+    piclabel2->setPixmap(QPixmap::fromImage(*img2));
+
     timelabel = new QLabel(tr("00:00/00:00"),this);
     infolabel = new QLabel(this);
     ratelabel = new QLabel(this);

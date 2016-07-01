@@ -12,8 +12,10 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-
-	MainWindow w;
+    QMediaPlayer *musicplayer = new QMediaPlayer;
+    musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\music.mp3"));
+    MusicWidget w(0,musicplayer);
+    //MainWindow w;
     //PlayControls w;
 	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
 	QTextCodec::setCodecForLocale(codec);

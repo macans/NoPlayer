@@ -27,8 +27,7 @@ private:
     QCheckBox *lrc;
     QString totaltime;
     QString nowtime;
-    QImage *img;
-
+    QImage *localimg;
 signals:
    // void musicplayed();
 	void rightButtonClicked(QPoint pos);

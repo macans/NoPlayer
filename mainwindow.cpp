@@ -3,6 +3,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent)
 {
+
 	playlistState = false;
 	mousePressed = false;
 	controlState = false;
@@ -17,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	playWidget = new VideoWidget(this);
 	//playWidget = new MusicWidget(this, player);
 	player->setVideoOutput((QVideoWidget*)playWidget);
-	
+
 	player->setVolume(50);
 	player->play();
 
@@ -75,8 +76,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	layout->addLayout(displayLayout, 2);
 	layout->addLayout(controlLayout);
 	this->setLayout(layout);
-	
-	
+
+
 	this->mousePressed = false;
 	this->setWindowTitle("NoPlayer");
 	//this->setWindowIcon();
@@ -110,7 +111,7 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 {
 	const QRect &rc = this->geometry();
 	qDebug() << this->geometry().x() << this->geometry().y();
-	
+
 	//updateWindowSize();
 }
 
@@ -312,4 +313,3 @@ void MainWindow::openMenu(QPoint pos)
 /*
 	VideoWidget 大小与主窗口保持一致
 */
-
