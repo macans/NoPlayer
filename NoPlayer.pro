@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     playlistmodel.cpp \
     videowidget.cpp \
     playcontrols.cpp \
-    about_ui.cpp
+    about_ui.cpp \
+    subtitlewidget.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -31,7 +32,8 @@ HEADERS  += mainwindow.h \
     playlistmodel.h \
     videowidget.h \
     playcontrols.h \
-    about_ui.h
+    about_ui.h \
+    subtitlewidget.h
 
 
 FORMS    += controlwidget.ui \

@@ -164,8 +164,8 @@ void ControlWidget::fontshowFUN(){
 	bool ok;
 	QFont  font = QFontDialog::getFont(&ok);
 	if (ok){
+		QString name = font.family();
 		fontshow->setFont(font);
-
 	}
 	else {
 

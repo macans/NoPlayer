@@ -114,3 +114,10 @@ void PlaylistModel::changeItems(int start, int end)
 	m_data.clear();
 	emit dataChanged(index(start, 0), index(end, ColumnCount));
 }
+
+QString PlaylistModel::getListItem(const QModelIndex &index)
+{
+	QVariant var = m_data[index];
+	QString res = var.toString();
+	return res;
+}

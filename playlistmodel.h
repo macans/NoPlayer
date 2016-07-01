@@ -29,7 +29,7 @@ public:
 
 	QMediaPlaylist *playlist() const;
 	void setPlaylist(QMediaPlaylist *playlist);
-
+	QString getListItem(const QModelIndex &index);
 	bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::DisplayRole);
 
 	private slots:

@@ -13,6 +13,7 @@ class MusicWidget : public QWidget
 public:
     explicit MusicWidget(QWidget *parent = 0,QMediaPlayer *player = 0);
 
+	void mousePressEvent(QMouseEvent *event);
 private:
     void createwidgets();
 
@@ -30,12 +31,14 @@ private:
 
 signals:
    // void musicplayed();
+	void rightButtonClicked(QPoint pos);
 
 public slots:
     //void dealmusic();
     void updateDuration(qint64 duration);
     void updateInfo();
     void updatePosition(qint64 position);
+
 };
 
 #endif // MUSICWIDGET_H

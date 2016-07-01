@@ -28,8 +28,8 @@ signals :
 	void next();
 	void previous();
 	void open();
-	void fastforword();
-	void rewind();
+	void fastforword(int msec = 0);
+	void rewind(int msec = 0);
 	void changeVolume(int);
 	void changeMuting(bool);
 	void playlistButtonClicked();

@@ -6,26 +6,26 @@ MainWindow::MainWindow(QWidget *parent) :
 	playlistState = false;
 	mousePressed = false;
 	controlState = false;
+	menuState = false;
+	playWidget = NULL;
 	player = new QMediaPlayer(this);
-	playlist = new QMediaPlaylist();
-	player->setPlaylist(playlist);
-	//player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
-
+	playList = new QMediaPlaylist();
+	player->setPlaylist(playList);
+	player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
+	subWidget = new SubtitleWidget(this, playConfig);
 	//播放视频
+	playWidget = new VideoWidget(this);
 	//playWidget = new MusicWidget(this, player);
-	//player->setVideoOutput((QVideoWidget*)playWidget);
+	player->setVideoOutput((QVideoWidget*)playWidget);
 	
 	player->setVolume(50);
 	player->play();
 
-	playlistModel = new PlaylistModel();
-	playlistModel->setPlaylist(playlist);
+	playlistWidget = new QListWidget;
 
-	playlistView = new QListView();
-	playlistView->setModel(playlistModel);
-	playlistView->setCurrentIndex(playlistModel->index(playlist->currentIndex(), 0));
-	connect(playlistView, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
-	connect(playlistView, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(playlistButtonClicked()));
+	connect(playlistWidget, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
+	connect(playlistWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(playlistButtonClicked()));
+
 	//下方控制块
 	controls = new PlayControls(this);
 	controls->setDuration(player->duration());
@@ -47,30 +47,30 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
 	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
 	//controls->hide();
-
+	
 	controlWidget = new ControlWidget;
 	//controlWidget;
 	connect(controlWidget, SIGNAL(controlWidgetClosed()), this, SLOT(controlButtonClicked()));
 	controlWidget->hide();
 	//connect(controlWidget, SIGNAL())
-	connect(controlWidget, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
-	connect(controlWidget, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
-	connect(controlWidget, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
+	
+	menuWidget = new MenuWidget;
+	menuWidget->hide();
 
 	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 	connect(player, SIGNAL(positionChanged(qint64)), controls, SLOT(positionChanged(qint64)));
 	connect(player, SIGNAL(durationChanged(qint64)), controls, SLOT(durationChanged(qint64)));
 
 	//布局
-	QHBoxLayout *displayLayout = new QHBoxLayout;
+	displayLayout = new QHBoxLayout;
 	displayLayout->addWidget(playWidget);
-	playlistView->hide();
+	playlistWidget->hide();
 
-	QHBoxLayout *controlLayout = new QHBoxLayout;
+	controlLayout = new QHBoxLayout;
 	controlLayout->addWidget(controls);
 	//controlLayout->addStretch(1);
 
-	QBoxLayout *layout = new QVBoxLayout;
+	layout = new QVBoxLayout;
 	layout->setMargin(0);
 	layout->addLayout(displayLayout, 2);
 	layout->addLayout(controlLayout);
@@ -151,22 +151,27 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::nextClicked()
 {
-	playlist->next();
+	playList->next();
 }
 
 void MainWindow::previousClicked()
 {
-	playlist->previous();
+	playList->previous();
 }
 
-void MainWindow::fastforword()
+//传过来的是步进的毫秒数
+void MainWindow::fastforword(int msec)
 {
-
+	qint64 curPos = player->position();
+	msec = (msec == 0 ? playConfig->SecForword() : msec);
+	player->setPosition(curPos + msec);
 }
 
-void MainWindow::rewind()
+void MainWindow::rewind(int msec)
 {
-
+	qint64 curPos = player->position();
+	msec = (msec == 0 ? playConfig->SecRewind() : msec);
+	player->setPosition(curPos - msec);
 }
 
 void MainWindow::mediaStatusChanged(QMediaPlayer::MediaStatus status)
@@ -182,11 +187,11 @@ void MainWindow::mediaStatusChanged(QMediaPlayer::MediaStatus status)
 void MainWindow::playlistButtonClicked()
 {
 	if (playlistState){
-		playlistView->hide();
+		playlistWidget->hide();
 		playlistState = false;
 	}
 	else{
-		playlistView->show();
+		playlistWidget->show();
 		playlistState = true;
 	}
 }
@@ -194,30 +199,46 @@ void MainWindow::playlistButtonClicked()
 void MainWindow::openFile()
 {
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
+	if (playWidget != NULL){
+		delete playWidget;
+		playWidget = NULL;
+	}
+	playList->clear();
+	playlistWidget->clear();
 	addToPlaylist(fileNames);
-	int p = playlist->mediaCount();
-	playlist->setCurrentIndex(p);
+	int p = playList->mediaCount();
+	playList->setCurrentIndex(p - 1);
 	player->play();
 }
 
 void MainWindow::addToPlaylist(QStringList fileNames)
 {
+	//playList->clear();
 	foreach(QString const &argument, fileNames) {
 		QFileInfo fileInfo(argument);
 		if (fileInfo.exists()) {
 			QUrl url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
-			if (fileInfo.suffix().toLower() == QLatin1String("mp3")) {
-				//delete playWidget;
-				playWidget = new MusicWidget(this, player);
-				playlist->addMedia(url);
+			QString suffixName = fileInfo.suffix().toLower();
+			if (suffixName == "mp3" || suffixName == "flac") {
+				//音频
+				if (playWidget == NULL){
+					initPlayWidget(PLAY_MUSIC);
+				}	
+				playlistWidget->addItem(url.toString());
+				playList->addMedia(url);
 			}
-			else
-				playlist->addMedia(url);
+			else{
+				if (playWidget == NULL){
+					initPlayWidget(PLAY_VIDEO);
+				}
+				playlistWidget->addItem(url.toString());
+				playList->addMedia(url);
+			}
 		}
 		else {
 			QUrl url(argument);
 			if (url.isValid()) {
-				playlist->addMedia(url);
+				playList->addMedia(url);
 			}
 		}
 	}
@@ -226,7 +247,7 @@ void MainWindow::addToPlaylist(QStringList fileNames)
 void MainWindow::jump(const QModelIndex &index)
 {
 	if (index.isValid()){
-		playlist->setCurrentIndex(index.row());
+		playList->setCurrentIndex(index.row());
 		player->play();
 	}
 }
@@ -252,9 +273,38 @@ void MainWindow::loadLocalConfig()
 {
 	//加载本地设置
 	playConfig = new PlayConfig;
-	playConfig->Sec_forword(5);
-	playConfig->Sec_rewind(5);
+	playConfig->SecForword(5000);
+	playConfig->SecRewind(5000);
 	playConfig->Rate(1);
+}
+
+void MainWindow::initPlayWidget(int flag)
+{
+	if (flag == PLAY_MUSIC){
+		playWidget = new MusicWidget(this, player);
+	}
+	if(flag == PLAY_VIDEO){
+		playWidget = new VideoWidget(this);
+		VideoWidget *v = (VideoWidget*)playWidget;
+		player->setVideoOutput((QVideoWidget*)playWidget);
+	}
+	displayLayout->addWidget(playWidget);
+	connect(controlWidget, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
+	connect(controlWidget, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
+	connect(controlWidget, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
+	connect(playWidget, SIGNAL(rightButtonClicked(QPoint)), this, SLOT(openMenu(QPoint)));
+}
+
+void MainWindow::openMenu(QPoint pos)
+{
+	if (menuState){
+		menuWidget->hide();
+		menuState = false;
+	}
+	else{
+		menuWidget->show();
+		menuState = true;
+	}
 }
 
 

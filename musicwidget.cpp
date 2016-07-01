@@ -79,3 +79,10 @@ void MusicWidget::createwidgets(){
     layout->addLayout(musicLayout);
 }
 
+void MusicWidget::mousePressEvent(QMouseEvent *event)
+{
+	if (event->button() == Qt::RightButton){
+		emit rightButtonClicked(event->pos());
+	}
+}
+

@@ -6,6 +6,9 @@
 #define PLAYSINGLE	0x03
 #define PLAYRANDOM	0x04
 
+#define PLAY_MUSIC	0x01
+#define PLAY_VIDEO	0x02
+
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
@@ -16,37 +19,18 @@
 #include <QListView>
 #include <QFileDialog>
 #include <QPixmap>
+#include <QMenu>
+#include <QListWidget>
+
 
 #include "videowidget.h"
 #include "playcontrols.h"
-#include "playlistmodel.h"
 #include "ControlWidget.h"
 #include "musicwidget.h"
+#include "menuwidget.h"
+#include "playconfig.h"
+#include "subtitlewidget.h"
 
-class PlayConfig{
-private:
-	int sec_forword;
-	int sec_rewind;
-	int rate;
-	QString lastPlayedName;
-	int playMethod;
-	
-public:
-	int Sec_forword() const { return sec_forword; }
-	void Sec_forword(int val) { sec_forword = val; }
-
-	int Sec_rewind() const { return sec_rewind; }
-	void Sec_rewind(int val) { sec_rewind = val; }
-
-	int Rate() const { return rate; }
-	void Rate(int val) { rate = val; }
-
-	QString LastPlayedName() const { return lastPlayedName; }
-	void LastPlayedName(QString val) { lastPlayedName = val; }
-
-	int PlayMethod() const { return playMethod; }
-	void PlayMethod(int val) { playMethod = val; }
-};
 
 class MainWindow : public QWidget
 {
@@ -65,30 +49,37 @@ public:
     void updateWindowSize();
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
 	void addToPlaylist(QStringList fileNames);
+	void initPlayWidget(int flag);
 private slots:
 	void playlistButtonClicked();
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void nextClicked();
 	void previousClicked();
-	void fastforword();
-	void rewind();
+	void fastforword(int msec = 0);
+	void rewind(int msec = 0);
 	void openFile();
 	void controlButtonClicked();
 	void jump(const QModelIndex &index);
 	void seek(int seconds);
+	void openMenu(QPoint pos);
 private:
 	QWidget *playWidget;
 	QMediaPlayer *player;
-	QMediaPlaylist *playlist;
-	QAbstractItemView *playlistView;
-	PlaylistModel *playlistModel;
+	QMediaPlaylist *playList;
+	QListWidget *playlistWidget;
 	PlayControls *controls;
 	ControlWidget *controlWidget;
+	MenuWidget *menuWidget;
+	SubtitleWidget *subWidget;
 	QSize wndSize;
 	PlayConfig *playConfig;
+
 	bool mousePressed;
 	bool playlistState;
 	bool controlState;
+	bool menuState;
+	QHBoxLayout *displayLayout, *controlLayout;
+	QVBoxLayout *layout;
 };
 
 #endif // MAINWINDOW_H

@@ -14,7 +14,15 @@ VideoWidget::VideoWidget(QWidget *parent) : QVideoWidget(parent)
 
 void VideoWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
+	if (event->button() == Qt::RightButton) return;
 	setFullScreen(!isFullScreen());
 	event->accept();
+}
+
+void VideoWidget::mousePressEvent(QMouseEvent *event)
+{
+	if (event->button() == Qt::RightButton){
+		emit rightButtonClicked(event->pos());
+	}
 }
 
