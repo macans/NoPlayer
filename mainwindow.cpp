@@ -12,8 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	//player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
 
 	//播放视频
-	playWidget = new VideoWidget(this); 
-	player->setVideoOutput((QVideoWidget*)playWidget);
+	//playWidget = new MusicWidget(this, player);
+	//player->setVideoOutput((QVideoWidget*)playWidget);
 	
 	player->setVolume(50);
 	player->play();
@@ -34,8 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(controls, SIGNAL(play()), player, SLOT(play()));
 	connect(controls, SIGNAL(pause()), player, SLOT(pause()));
 	connect(controls, SIGNAL(stop()), player, SLOT(stop()));
-	connect(controls, SIGNAL(next()), player, SLOT(nextClicked()));
-	connect(controls, SIGNAL(previous()), player, SLOT(previousClicked()));
+	connect(controls, SIGNAL(next()), this, SLOT(nextClicked()));
+	connect(controls, SIGNAL(previous()), this, SLOT(previousClicked()));
 	connect(controls, SIGNAL(fastforword()), this, SLOT(fastforword()));
 	connect(controls, SIGNAL(rewind()), this, SLOT(rewind()));
 	connect(controls, SIGNAL(open()), this, SLOT(openFile()));
@@ -49,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	//controls->hide();
 
 	controlWidget = new ControlWidget;
+	//controlWidget;
 	connect(controlWidget, SIGNAL(controlWidgetClosed()), this, SLOT(controlButtonClicked()));
 	controlWidget->hide();
 	//connect(controlWidget, SIGNAL())
@@ -81,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	//this->setWindowIcon();
 	//this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
+	this->resize(QSize(400, 320));
 }
 
 MainWindow::~MainWindow()
@@ -149,12 +151,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::nextClicked()
 {
-
+	playlist->next();
 }
 
 void MainWindow::previousClicked()
 {
-
+	playlist->previous();
 }
 
 void MainWindow::fastforword()
@@ -204,8 +206,10 @@ void MainWindow::addToPlaylist(QStringList fileNames)
 		QFileInfo fileInfo(argument);
 		if (fileInfo.exists()) {
 			QUrl url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
-			if (fileInfo.suffix().toLower() == QLatin1String("m3u")) {
-				playlist->load(url);
+			if (fileInfo.suffix().toLower() == QLatin1String("mp3")) {
+				//delete playWidget;
+				playWidget = new MusicWidget(this, player);
+				playlist->addMedia(url);
 			}
 			else
 				playlist->addMedia(url);
@@ -242,6 +246,15 @@ void MainWindow::controlButtonClicked()
 void MainWindow::seek(int seconds)
 {
 	player->setPosition(seconds * 1000);
+}
+
+void MainWindow::loadLocalConfig()
+{
+	//加载本地设置
+	playConfig = new PlayConfig;
+	playConfig->Sec_forword(5);
+	playConfig->Sec_rewind(5);
+	playConfig->Rate(1);
 }
 
 

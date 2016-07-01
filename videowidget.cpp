@@ -2,13 +2,14 @@
 
 VideoWidget::VideoWidget(QWidget *parent) : QVideoWidget(parent)
 {
-	setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-
-	QPalette p = palette();
-	p.setColor(QPalette::Window, Qt::black);
-	setPalette(p);
-
-	setAttribute(Qt::WA_OpaquePaintEvent);
+	
+	QPixmap pixmap(":/image/logo.png");
+	QPalette palette;
+	palette.setBrush(this->backgroundRole(), QBrush(pixmap));	
+	palette.setBrush(QPalette::Window, QBrush(pixmap));
+	this->setPalette(palette);
+	//this->setStyleSheet("background-color:black");
+	this->setAutoFillBackground(true);
 }
 
 void VideoWidget::mouseDoubleClickEvent(QMouseEvent *event)

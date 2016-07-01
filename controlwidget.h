@@ -12,6 +12,7 @@ public:
 	explicit ControlWidget(QWidget *parent = 0);
 	~ControlWidget();
 	void closeEvent(QCloseEvent *event);
+	//void setHue(int d)
 signals:
 	void changeVolume(int);
 	void changeBrightness(int);

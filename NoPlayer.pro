@@ -36,3 +36,6 @@ HEADERS  += mainwindow.h \
 
 FORMS    += controlwidget.ui \
     about_ui.ui
+
+RESOURCES += \
+    images.qrc

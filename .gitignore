@@ -8,4 +8,6 @@
 GeneratedFiles/*
 debug/*
 x64/
+*.mp4
+*.srt
 
