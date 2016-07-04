@@ -5,7 +5,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     playlist = playList;
     listWidget = new QListWidget(this);
     QStringList tempList;
-    tempList.append("F://hehe.mp4");
+    tempList.append("F:/math/test.mp4");
     tempList<<"C://我还能这.mp3";
     tempList.append("C://至少还有你.mp3");
     tempList<<"C://你心永恒.mp3";
@@ -17,10 +17,10 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     tempList<<"C://我还能这.mp3";
     tempList<<"C://至少还有你.mp3";
 
+    this->addItemFromLocal(tempList,false);
     this->addItemFromLocal(tempList);
-    this->addItemFromLocal(tempList);
-    this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-    this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+    this->addItemFromNet("Beyond-海阔天空.mp3","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+    this->addItemFromNet("Beyond-海阔天空.mp3","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
     this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
 
 
@@ -70,6 +70,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     connect(listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(setItemPlay(QListWidgetItem*)));
 
     connect(playlist,SIGNAL(currentIndexChanged(int)),this,SLOT(setItemPlay(int)));
+    connect(playType,SIGNAL(clicked(bool)),this,SLOT(setPlayMode()));
 //------signal-end------------
 
 }
@@ -86,14 +87,18 @@ void PlaylistWindow::clear()
 //移除当前被选中的item
 void PlaylistWindow::removeItems()
 {
-    if(listWidget->currentItem() == listWidget->item(playlist->currentIndex())) {
-       playlist->setCurrentIndex(0);
+    if(listWidget->count()>0 && listWidget->currentItem()!=NULL) {
+
+        if(listWidget->currentItem() == listWidget->item(playlist->currentIndex())) {
+           playlist->setCurrentIndex(0);
+        }
+        int row = listWidget->currentRow();
+
+        playlist->removeMedia(row);
+        listWidget->takeItem(row);
+        this->updateIndex();
+        listWidget->update();
     }
-    int row = listWidget->currentRow();
-    listWidget->takeItem(row);
-    playlist->removeMedia(row);
-    this->updateIndex();
-    listWidget->update();
 
 }
 
@@ -113,7 +118,6 @@ void PlaylistWindow::searchItem()
         }
     }
 }
-
 //清除搜索状态
 void PlaylistWindow::clearSearch()
 {
@@ -137,6 +141,7 @@ void PlaylistWindow::setItemPlay(QListWidgetItem *item)
            this->setItemNormalView(listWidget->item(playlist->currentIndex()));
         }
         playlist->setCurrentIndex(listWidget->row(item));
+        listWidget->setCurrentItem(item);
         this->setItemPlayView(item);
     }
 }
@@ -166,18 +171,51 @@ void PlaylistWindow::setItemSearchView(QListWidgetItem *item)
     item->setTextColor(ITEM_COLOR_SEARCH);
 }
 //设置播放模式
-//void PlaylistWindow::setPlayMode()
-//{
-//    if(playBackMode<4) {
-//        playBackMode++;
-//    } else{
-//        playBackMode = 1;
-//    }
-//    switch(playBackMode) {
-//    case 1:
-//        playType->setIcon(":image/ic");
-//    }
-//}
+void PlaylistWindow::setPlayMode()
+{
+    if(playBackMode<4) {
+        playBackMode++;
+    } else{
+        playBackMode = 1;
+    }
+
+    switch(playBackMode) {
+    case CUR_ITEM_LOOP:
+        playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
+        playType->setIcon(QIcon(":image/ic1.jpg"));
+        playType->setToolTip("单曲循环");
+        break;
+    case SEQUENTIAL:
+        playlist->setPlaybackMode(QMediaPlaylist::Sequential);
+        playType->setIcon(QIcon(":image/ic2.png"));
+        playType->setToolTip("顺序播放");
+        break;
+    case LOOP:
+        playlist->setPlaybackMode(QMediaPlaylist::Loop);
+        playType->setIcon(QIcon(":image/ic3.png"));
+        playType->setToolTip("列表循环");
+        break;
+    case RANDOM:
+        playlist->setPlaybackMode(QMediaPlaylist::Random);
+        playType->setIcon(QIcon(":image/ic4.png"));
+        playType->setToolTip("随机播放");
+        break;
+    default:
+        break;
+    }
+}
+//下一曲
+void PlaylistWindow::next()
+{
+    this->setItemNormalView(listWidget->item(playlist->currentIndex()));
+    playlist->next();
+}
+//上一曲
+void PlaylistWindow::previous()
+{
+    this->setItemNormalView(listWidget->item(playlist->currentIndex()));
+    playlist->previous();
+}
 
 //当列表移除某一项之后，重新更新每一项前面的index
 void PlaylistWindow::updateIndex()
@@ -194,7 +232,26 @@ void PlaylistWindow::updateIndex()
         if(tmpItem->whatsThis()=="") {
             tmpItem->setText(index.append(". ").append(tmpItem->toolTip().split("/").last()));
         } else {
-            tmpItem->setText(index.append(". ").append(tmpItem->statusTip()));
+            tmpItem->setText(index.append(". ").append(tmpItem->toolTip()));
+        }
+    }
+}
+
+//获取文件类型是music还是video
+int PlaylistWindow::getMediaType(const QString fileName)
+{
+    QFileInfo fileInfo(fileName);
+    qDebug() << fileName << "-name";
+    if (fileInfo.exists()) {
+    //QUrl url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+         QString suffixName = fileInfo.suffix().toLower();
+        qDebug() << suffixName << "-suffix";
+        if (suffixName == "mp3" || suffixName == "flac" ||suffixName == "wmv") {
+            return MEDIA_TYPE_MUSIC;
+        } else if(suffixName == "mp4" ||suffixName == "avi") {
+            return MEDIA_TYPE_VIDEO;
+        } else {
+            return -1;
         }
     }
 }
@@ -206,13 +263,15 @@ void PlaylistWindow::updateIndex()
 
 
 //从本地添加items
-void PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
+int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
 {
+    int mediaType;
     for(int i=0;i<addList.length();i++) {
         QString label = addList.at(i);
         QStringList list = label.split("/");
         QListWidgetItem *item = new QListWidgetItem(list.last(),listWidget);
         int row = listWidget->row(item);
+
         //添加索引字符
         QString index = "";
         if(row<9) {
@@ -225,22 +284,31 @@ void PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
         item->setSizeHint(QSize(100,30));
         item->setIcon(QIcon(":/image/mp4.png"));
         item->setToolTip(label);
+        //设置media的类型
+        int type = getMediaType(label);
+        if(type != -1){
+            item->setStatusTip(QString::number(type,10));
+            qDebug("%d",type);
+        }
         this->setItemNormalView(item);
-
         //添加到playlist 并将第一条设置为当前播放item
         playlist->addMedia(QUrl::fromLocalFile(label));
         if(0 == i){
+            mediaType = type;
             if(playNow){
                 this->setItemPlay(item);
                 qDebug("%d",playlist->currentIndex());
+            }else{
+                listWidget->setCurrentItem(item);
             }
         }
     }
+    return mediaType;
 }
 
 
 //添加网络item
-void PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id)
+int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id)
 {
     QListWidgetItem *item = new QListWidgetItem(additem,listWidget);
     int row = listWidget->row(item);
@@ -256,12 +324,15 @@ void PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,
     item->setSizeHint(QSize(100,30));
     item->setIcon(QIcon(":/image/mp4.png"));
     item->setWhatsThis(QString::number(id,10));
-    item->setStatusTip(additem);
+    item->setToolTip(additem);
+    //设置media的类型
+    item->setStatusTip(QString::number(MEDIA_TYPE_MUSIC,10));
     this->setItemNormalView(item);
 
     //添加到playlist 并将第一条设置为当前播放item
     playlist->addMedia(QUrl(link));
     this->setItemPlay(item);
-    qDebug("%d",playlist->currentIndex());
+    //qDebug("%d",playlist->currentIndex());
+    return MEDIA_TYPE_MUSIC;
 
 }
