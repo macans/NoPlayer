@@ -18,11 +18,11 @@
 #define LOOP 0x3
 #define RANDOM 0x4
 
-class PlaylistView : public QWidget
+class PlaylistWindow : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PlaylistView(QMediaPlaylist *playList,QWidget *parent = 0);
+    explicit PlaylistWindow(QMediaPlaylist *playList,QWidget *parent = 0);
 
 signals:
     void	currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);

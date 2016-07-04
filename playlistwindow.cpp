@@ -1,6 +1,6 @@
-#include "playlistwidget.h"
+#include "playlistwindow.h"
 
-PlaylistView::PlaylistView(QMediaPlaylist *playList,QWidget *parent) : QWidget(parent)
+PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidget(parent)
 {
     playlist = playList;
     listWidget = new QListWidget(this);
@@ -77,14 +77,14 @@ PlaylistView::PlaylistView(QMediaPlaylist *playList,QWidget *parent) : QWidget(p
 
 //-----------slots-start--------
 //清空列表和playlist
-void PlaylistView::clear()
+void PlaylistWindow::clear()
 {
     listWidget->clear();
     playlist->clear();
 }
 
 //移除当前被选中的item
-void PlaylistView::removeItems()
+void PlaylistWindow::removeItems()
 {
     if(listWidget->currentItem() == listWidget->item(playlist->currentIndex())) {
        playlist->setCurrentIndex(0);
@@ -98,7 +98,7 @@ void PlaylistView::removeItems()
 }
 
 //搜索items
-void PlaylistView::searchItem()
+void PlaylistWindow::searchItem()
 {
     this->clearSearch();
     QString str= search_edit->text();
@@ -113,8 +113,9 @@ void PlaylistView::searchItem()
         }
     }
 }
+
 //清除搜索状态
-void PlaylistView::clearSearch()
+void PlaylistWindow::clearSearch()
 {
     if(search_flag) {
         search_flag = false;
@@ -129,7 +130,7 @@ void PlaylistView::clearSearch()
 }
 
 //将item设置为播放项，并将原来的项设置为普通状态的样式
-void PlaylistView::setItemPlay(QListWidgetItem *item)
+void PlaylistWindow::setItemPlay(QListWidgetItem *item)
 {
     if(item != listWidget->item(playlist->currentIndex())) {
         if(listWidget->item(playlist->currentIndex())!=NULL) {
@@ -140,7 +141,7 @@ void PlaylistView::setItemPlay(QListWidgetItem *item)
     }
 }
 //将行号为row的设置为播放项
-void PlaylistView::setItemPlay(int row)
+void PlaylistWindow::setItemPlay(int row)
 {
     QListWidgetItem *item = listWidget->item(row);
     this->setItemPlayView(item);
@@ -148,24 +149,24 @@ void PlaylistView::setItemPlay(int row)
 }
 
 //设置播放状态下的样式
-void PlaylistView::setItemPlayView(QListWidgetItem *item)
+void PlaylistWindow::setItemPlayView(QListWidgetItem *item)
 {
     item->setTextColor(ITEM_COLOR_PLAY);
 }
 
 //设置普通状态下的样式
-void PlaylistView::setItemNormalView(QListWidgetItem *item)
+void PlaylistWindow::setItemNormalView(QListWidgetItem *item)
 {
     item->setTextColor(ITEM_COLOR_NORMAL);
 }
 
 //设置搜索到的item的样式
-void PlaylistView::setItemSearchView(QListWidgetItem *item)
+void PlaylistWindow::setItemSearchView(QListWidgetItem *item)
 {
     item->setTextColor(ITEM_COLOR_SEARCH);
 }
 //设置播放模式
-//void PlaylistView::setPlayMode()
+//void PlaylistWindow::setPlayMode()
 //{
 //    if(playBackMode<4) {
 //        playBackMode++;
@@ -179,7 +180,7 @@ void PlaylistView::setItemSearchView(QListWidgetItem *item)
 //}
 
 //当列表移除某一项之后，重新更新每一项前面的index
-void PlaylistView::updateIndex()
+void PlaylistWindow::updateIndex()
 {
     QString index="";
     for(int i=0; i<listWidget->count();i++) {
@@ -205,7 +206,7 @@ void PlaylistView::updateIndex()
 
 
 //从本地添加items
-void PlaylistView::addItemFromLocal(const QStringList &addList,bool playNow)
+void PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
 {
     for(int i=0;i<addList.length();i++) {
         QString label = addList.at(i);
@@ -239,7 +240,7 @@ void PlaylistView::addItemFromLocal(const QStringList &addList,bool playNow)
 
 
 //添加网络item
-void PlaylistView::addItemFromNet(const QString &additem, const QString &link,int id)
+void PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id)
 {
     QListWidgetItem *item = new QListWidgetItem(additem,listWidget);
     int row = listWidget->row(item);

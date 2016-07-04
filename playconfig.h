@@ -22,6 +22,9 @@ struct PlayConfig{
 	int hue;
 	int brightness;
 	int contrast;
+
+	//³£¹æ
+	int stopWhenMin;
 };
 
 #endif

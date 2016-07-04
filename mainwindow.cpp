@@ -25,9 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	player->setVolume(50);
 	player->play();
 
-	playlistWidget = new QListWidget;
-	connect(playlistWidget, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
-	connect(playlistWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(playlistButtonClicked()));
+	playlistWindow = new PlaylistWindow(playList, this);
 
 	//下方控制块
 	controls = new PlayControls(this);
@@ -83,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	//布局
 	displayLayout = new QHBoxLayout;
 	displayLayout->addWidget(playWidget);
-	playlistWidget->hide();
+	playlistWindow->hide();
 
 	controlLayout = new QHBoxLayout;
 	controlLayout->addWidget(controls);
@@ -172,7 +170,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 	}
 }
 
-
 void MainWindow::nextClicked()
 {
 	playList->next();
@@ -211,11 +208,11 @@ void MainWindow::mediaStatusChanged(QMediaPlayer::MediaStatus status)
 void MainWindow::playlistButtonClicked()
 {
 	if (playlistState){
-		playlistWidget->hide();
+		playlistWindow->hide();
 		playlistState = false;
 	}
 	else{
-		playlistWidget->show();
+		playlistWindow->show();
 		playlistState = true;
 	}
 }
@@ -223,58 +220,23 @@ void MainWindow::playlistButtonClicked()
 void MainWindow::openFile()
 {
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
-	if (playWidget != NULL){
+	//添加播放列表
+	bool flag;
+	//bool flag = playlistWindow->addItemFromLocal(fileNames);
+	if (flag != curPlayFlag){
 		delete playWidget;
-		playWidget = NULL;
+		if (flag == PLAY_MUSIC){
+			playWidget = new MusicWidget(this, player);
+		}
+		else{
+			playWidget = new VideoWidget(this);
+			player->setVideoOutput((QVideoWidget*)playWidget);
+		}
 	}
-	playList->clear();
-	playlistWidget->clear();
-	addToPlaylist(fileNames);
-	int p = playList->mediaCount();
-	playList->setCurrentIndex(p - 1);
+	initPlayWidget(flag);
 	player->play();
 }
 
-void MainWindow::addToPlaylist(QStringList fileNames)
-{
-	//playList->clear();
-	foreach(QString const &argument, fileNames) {
-		QFileInfo fileInfo(argument);
-		if (fileInfo.exists()) {
-			QUrl url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
-			QString suffixName = fileInfo.suffix().toLower();
-			if (suffixName == "mp3" || suffixName == "flac") {
-				//音频
-				if (playWidget == NULL){
-					initPlayWidget(PLAY_MUSIC);
-				}	
-				playlistWidget->addItem(url.toString());
-				playList->addMedia(url);
-			}
-			else{
-				if (playWidget == NULL){
-					initPlayWidget(PLAY_VIDEO);
-				}
-				playlistWidget->addItem(url.toString());
-				playList->addMedia(url);
-			}
-		}
-		else {
-			QUrl url(argument);
-			if (url.isValid()) {
-				playList->addMedia(url);
-			}
-		}
-	}
-}
-
-void MainWindow::jump(const QModelIndex &index)
-{
-	if (index.isValid()){
-		playList->setCurrentIndex(index.row());
-		player->play();
-	}
-}
 
 void MainWindow::controlButtonClicked()
 {
@@ -304,18 +266,11 @@ void MainWindow::loadLocalConfig()
 	playConfig->hue = 50;
 	playConfig->brightness = 50;
 	playConfig->contrast = 50;
+	playConfig->stopWhenMin = 1;
 }
 
 void MainWindow::initPlayWidget(int flag)
 {
-	if (flag == PLAY_MUSIC){
-		playWidget = new MusicWidget(this, player);
-	}
-	if(flag == PLAY_VIDEO){
-		playWidget = new VideoWidget(this);
-		VideoWidget *v = (VideoWidget*)playWidget;
-		player->setVideoOutput((QVideoWidget*)playWidget);
-	}
 	displayLayout->addWidget(playWidget);
 	connect(controlWindow, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
 	connect(controlWindow, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
@@ -334,7 +289,7 @@ void MainWindow::openMenu(QPoint pos)
 		menuState = true;
 	}
 }
-
+ 
 void MainWindow::searchButtonClicked()
 {
 	if (searchState){
@@ -352,15 +307,14 @@ void MainWindow::getInfoComplete(bool flag, QString info, QString link)
 	qDebug() << info << endl;
 	qDebug() << link << endl;
 	initPlayWidget(PLAY_MUSIC);
+	int id;
+	//flag = true 时保证
 	if (flag){
 		//将链接加到播放列表
-		playlistWidget->addItem("Beyond");
-		playList->addMedia(QUrl(link));
-		int u = playList->mediaCount();
-		playList->setCurrentIndex(u - 1);
+		playlistWindow->addItemFromNet(info, link, id);
 	}
 	else{
-		
+		//playlistWindow
 	}
 }
 
@@ -382,6 +336,93 @@ void MainWindow::savePlayConfig()
 void MainWindow::savePlayList()
 {
 	//保存播放列表
+}
+
+void MainWindow::itemDoubleClicked(QListWidgetItem *item)
+{
+
+}
+
+void MainWindow::changeEvent(QEvent *event)
+{
+	if (event->type() == QEvent::WindowStateChange){
+		if (windowState() & Qt::WindowMinimized){
+			if (playConfig->stopWhenMin)
+			player->pause();
+		}
+	}
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+	switch (event->key()){
+		case Qt::Key_Space: 
+			if (player->state() == QMediaPlayer::PlayingState){
+				player->pause();
+			}
+			else{
+				player->play();
+			}
+			break;
+		case Qt::Key_Left:
+			rewind(playConfig->secRewind);
+			break;
+		case Qt::Key_Right:
+			fastforword(playConfig->secRewind);
+			break;
+		case Qt::Key_Up:
+			raiseVolume(VOLUME_STEP);
+			break;
+		case Qt::Key_Down:
+			raiseVolume(-VOLUME_STEP);
+			break;
+		case Qt::Key_Escape:
+			if (curPlayFlag == PLAY_VIDEO && ((QVideoWidget*)playWidget)->isFullScreen()){
+				((QVideoWidget*)playWidget)->setFullScreen(false);
+			}
+			break;
+		case Qt::Key_C:
+			raisePlaybackRate(PLAYRATE_STEP);
+			break;
+		case Qt::Key_X:
+			raisePlaybackRate(-PLAYRATE_STEP);
+			break;
+		case Qt::Key_Z:
+			initPlaybackRate();
+			break;
+		case Qt::Key_M:
+			raiseSubtitleDelay(SUBDELAY_STEP);
+			break;
+		case Qt::Key_N:
+			raiseSubtitleDelay(-SUBDELAY_STEP);
+			break;
+	}
+	
+}
+
+void MainWindow::raiseVolume(int step)
+{
+	int vol = player->volume() + step;
+	vol = qMin(vol, VOLUME_MAX);
+	vol = qMax(vol, VOLUME_MIN);
+	player->setVolume(vol);
+}
+
+void MainWindow::raisePlaybackRate(qreal step)
+{
+	qreal rate = player->playbackRate() + step;
+	rate = qMin(PLAYRATE_MIN, rate);
+	player->setPlaybackRate(rate);
+}
+
+void MainWindow::initPlaybackRate()
+{
+	player->setPlaybackRate(PLAYRATE_INIT);
+}
+
+void MainWindow::raiseSubtitleDelay(qint64 step)
+{
+	playConfig->subDelay += step;
 }
 
 
