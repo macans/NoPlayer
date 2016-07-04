@@ -263,8 +263,9 @@ int PlaylistWindow::getMediaType(const QString fileName)
 
 
 //从本地添加items
-void PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
+int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
 {
+    int mediaType;
     for(int i=0;i<addList.length();i++) {
         QString label = addList.at(i);
         QStringList list = label.split("/");
@@ -293,6 +294,7 @@ void PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
         //添加到playlist 并将第一条设置为当前播放item
         playlist->addMedia(QUrl::fromLocalFile(label));
         if(0 == i){
+            mediaType = type;
             if(playNow){
                 this->setItemPlay(item);
                 qDebug("%d",playlist->currentIndex());
@@ -301,11 +303,12 @@ void PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
             }
         }
     }
+    return mediaType;
 }
 
 
 //添加网络item
-void PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id)
+int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id)
 {
     QListWidgetItem *item = new QListWidgetItem(additem,listWidget);
     int row = listWidget->row(item);
@@ -330,5 +333,6 @@ void PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,
     playlist->addMedia(QUrl(link));
     this->setItemPlay(item);
     //qDebug("%d",playlist->currentIndex());
+    return MEDIA_TYPE_MUSIC;
 
 }

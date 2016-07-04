@@ -72,8 +72,8 @@ private:
     int getMediaType(const QString fileName);
 
 public:
-    void addItemFromLocal(const QStringList &addList,bool playNow = true);
-    void addItemFromNet(const QString &additem,const QString &link,int id);
+    int addItemFromLocal(const QStringList &addList,bool playNow = true);
+    int addItemFromNet(const QString &additem,const QString &link,int id);
 
 
 };
