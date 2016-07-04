@@ -19,20 +19,17 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
 {
     createwidgets();
 
-    QNetworkProxy proxy;
-    proxy.setType(QNetworkProxy::Socks5Proxy);
-    proxy.setHostName("127.0.0.1");
-    proxy.setPort(1080);
-    QNetworkProxy::setApplicationProxy(proxy);
-
+	curTime = QTime::currentTime();
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
     connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateNetinfo()));
     getlrc();
+	qDebug() << curTime.toString();
 	player->play();
 }
 void MusicWidget::updateDuration(qint64 duration){
     //总时间
+	qDebug() << curTime.toString();
     this->duration=duration;
     QTime total(0, duration / 60000, qRound((duration % 60000) / 1000.0));
     totaltime=total.toString(tr("mm:ss"));
@@ -40,6 +37,7 @@ void MusicWidget::updateDuration(qint64 duration){
 
 void MusicWidget::updateInfo(){
     //获取歌曲名和歌手
+	qDebug() << curTime.toString();
     QStringList info;
     QString author=player->metaData("Author").toString();
     info += author;
@@ -69,6 +67,7 @@ void MusicWidget::updateInfo(){
 
 void MusicWidget::updatePosition(qint64 position){
     //当前播放时间
+	qDebug() << curTime.toString();
     QTime now(0, position / 60000, qRound((position % 60000) / 1000.0));
     nowtime=now.toString(tr("mm:ss"));
     QStringList timeinfo;
@@ -90,6 +89,7 @@ void MusicWidget::updatePosition(qint64 position){
 
 void MusicWidget::updateNetinfo(){
     //获取歌曲名和歌手
+	qDebug() << curTime.toString();
     QStringList info;
     QString author=player->metaData("Author").toString();
     info += author;

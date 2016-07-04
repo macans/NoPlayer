@@ -16,6 +16,8 @@
 #include <QListWidget>
 #include <QJsonParseError>
 #include <QtScript>
+
+#include "playconfig.h"
 class SearchWindow : public QWidget
 {
 	Q_OBJECT
@@ -26,8 +28,8 @@ public:
 	QString unifyResult(QString res);
 	void getSongInfo(QString songId, bool isNewSong);
 signals:
-	void getInfoComplete(bool isNewSong, QString info, QString link = "");
-	public slots:
+	void getInfoComplete(bool isNewSong, InfoNetMusic &info);
+public slots:
 	void toolButtonClicked();
 	void searchReplyFinished();
 	void infoReplyFinished();
@@ -35,7 +37,7 @@ signals:
 	void itemDoubleClicked(QListWidgetItem *item);
 private:
 	bool isNewSong;
-	QString link, info;
+	InfoNetMusic info;
 	QNetworkAccessManager manager;
 	QNetworkReply *searchReply;
 	QNetworkReply *infoReply;

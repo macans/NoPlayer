@@ -27,4 +27,11 @@ struct PlayConfig{
 	int stopWhenMin;
 };
 
+typedef struct {
+	int id;
+	QString name;
+	QString link;
+	QString lrclink;
+	QString info;
+}InfoNetMusic;
 #endif

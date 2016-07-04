@@ -133,7 +133,7 @@ void PlaylistWindow::clearSearch()
 }
 
 //将item设置为播放项，并将原来的项设置为普通状态的样式
-void PlaylistWindow::setItemPlay(QListWidgetItem *item)
+void PlaylistWindow::setItemPlay(QListWidgetItem *item, bool isLocal)
 {
 	if (listWidget->item(playlist->currentIndex()) != NULL) {
 		this->setItemNormalView(listWidget->item(playlist->currentIndex()));
@@ -141,7 +141,9 @@ void PlaylistWindow::setItemPlay(QListWidgetItem *item)
 	playlist->setCurrentIndex(listWidget->row(item));
 	listWidget->setCurrentItem(item);
 	this->setItemPlayView(item);
-	emit itemDoubleClicked(item);
+	if (isLocal){
+		emit itemDoubleClicked(item);
+	}
 }
 //将行号为row的设置为播放项
 void PlaylistWindow::setItemPlay(int row)
@@ -331,7 +333,7 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
 
     //添加到playlist 并将第一条设置为当前播放item
     playlist->addMedia(QUrl(link));
-    this->setItemPlay(item);
+    this->setItemPlay(item, false);
     //qDebug("%d",playlist->currentIndex());
     return MEDIA_TYPE_MUSIC;
 

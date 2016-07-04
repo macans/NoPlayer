@@ -25,7 +25,6 @@ public:
     explicit MusicWidget(QWidget *parent = 0,QMediaPlayer *player = 0);
     explicit MusicWidget(QString musicinfo,QString lrclink, QWidget *parent = 0,QMediaPlayer *player = 0);
 
-	void mousePressEvent(QMouseEvent *event);
 private:
     void createwidgets();
     void getlrc();
@@ -44,6 +43,8 @@ private:
     QString lrclink;
     QImage *localimg;
     QVector<lrcItem> lrctitle;
+	QTime curTime;
+
 signals:
    // void musicplayed();
 	void rightButtonClicked(QPoint pos);

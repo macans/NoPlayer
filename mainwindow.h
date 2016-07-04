@@ -19,6 +19,9 @@
 
 #define SUBDELAY_STEP	500
 
+#define MODEL_LAC		1
+#define MODEL_NET		0
+
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
@@ -62,7 +65,7 @@ public:
 	//自定义函数
     void updateWindowSize();
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
-	void initPlayWidget(int flag);
+	void initPlayWidget(int isVideo, int isLocal, QString info = "", QString lrclink = "");
 	void savePlayConfig();
 	void savePlayList();
 	void raiseVolume(int step);
@@ -78,7 +81,7 @@ public slots:
 	void colorChanged(QColor color);
 
 	//搜索
-	void getInfoComplete(bool flag, QString info, QString link);
+	void getInfoComplete(bool flag, InfoNetMusic &info);
 
 	//控制栏
 	void nextClicked();

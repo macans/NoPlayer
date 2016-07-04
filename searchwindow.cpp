@@ -4,11 +4,11 @@ SearchWindow::SearchWindow(QWidget *parent)
 : QWidget(parent)
 {
 
-	QNetworkProxy proxy;
+	/*QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::Socks5Proxy);
 	proxy.setHostName("127.0.0.1");
 	proxy.setPort(1080);
-	QNetworkProxy::setApplicationProxy(proxy);
+	QNetworkProxy::setApplicationProxy(proxy);*/
 	textEdit = new QTextEdit(this);
 	toolButton = new QToolButton(this);
 	listWidget = new QListWidget(this);
@@ -103,11 +103,9 @@ void SearchWindow::getSongInfo(QString songId, bool isNewSong)
 	QUrl url(QString(API_OF_SONGLINK).arg(songId));
 	QNetworkRequest request;
 	request.setUrl(url);
-	link = info = ""; 
-	if (isNewSong){
-		linkReply = manager.get(request);
-		connect(linkReply, SIGNAL(finished()), this, SLOT(linkReplyFinished()));
-	}
+	info.link = info.info = "";
+	linkReply = manager.get(request);
+	connect(linkReply, SIGNAL(finished()), this, SLOT(linkReplyFinished()));
 	url = QUrl(QString(API_OF_SONGINFO).arg(songId));
 	request.setUrl(url);
 	infoReply = manager.get(request);
@@ -116,21 +114,24 @@ void SearchWindow::getSongInfo(QString songId, bool isNewSong)
 
 void SearchWindow::infoReplyFinished()
 {
-	info = infoReply->readAll();
+	info.info = infoReply->readAll();
 	//info = info.replace("\\", "");
-	qDebug() << info << endl;
+	qDebug() << info.info << endl;
 	QScriptEngine engine;
-	QScriptValue val = engine.evaluate("value=" + info);
-	qDebug() << val.toString() << endl;
+	QScriptValue val = engine.evaluate("value=" + info.info);
 	int code = val.property("errorCode").toInt32();
 	qDebug() << val.isObject() << " " << val.isValid() << endl;
 	qDebug() << code << endl;
-	if (!isNewSong){
-		//在播放列表中打开
-		emit getInfoComplete(false, info);
-	}
-	else if (link != ""){
-		emit getInfoComplete(true, info, link);
+	QScriptValue song = val.property("data").property("songList").property(0);
+	info.id = song.property("songId").toInt32();
+	info.name = song.property("artistName").toString() + " - " + song.property("songName").toString();
+	if (info.link != ""){
+		if (isNewSong){
+			emit getInfoComplete(true, info);
+		}
+		else{
+			emit getInfoComplete(false, info);
+		}
 	}
 }
 
@@ -143,16 +144,21 @@ void SearchWindow::linkReplyFinished()
 	qDebug() << val.toString() << endl;
 	int code = val.property("errorCode").toInt32();
 	qDebug() << code << endl;
-	QString songList = val.property("songList").toString();
-	qDebug() << songList << endl;
-	link = val.property("data").property("songList").property(0).property("songLink").toString();
-	qDebug() << link << endl;
-	if (info != ""){
-		emit getInfoComplete(true, info, link);
+	QScriptValue songlist = val.property("data").property("songList").property(0);
+	info.link = songlist.property("songLink").toString();
+	info.lrclink = songlist.property("lrcLink").toString();
+	qDebug() << info.link << endl;
+	qDebug() << info.lrclink << endl;
+	
+	if (info.info != ""){
+		if (isNewSong){
+			emit getInfoComplete(true, info);
+		}
+		else{
+			emit getInfoComplete(false, info);
+		}
 	}
 }
-
-
 /*
 "{
 "errorCode":22000,

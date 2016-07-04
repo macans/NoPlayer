@@ -71,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	searchWindow = new SearchWindow;
 	searchWindow->hide();
-	connect(searchWindow, SIGNAL(getInfoComplete(bool, QString, QString)), this, SLOT(getInfoComplete(bool, QString, QString)));
+	connect(searchWindow, SIGNAL(getInfoComplete(bool, InfoNetMusic&)), this, SLOT(getInfoComplete(bool, InfoNetMusic&)));
 
 	connect(player, SIGNAL(positionChanged(qint64)), subLabel, SLOT(updateSubTitle(qint64)));
 	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
@@ -224,7 +224,7 @@ void MainWindow::openFile()
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
 	//添加播放列表
 	int flag = playlistWindow->addItemFromLocal(fileNames);
-	initPlayWidget(flag);
+	initPlayWidget(flag, MODEL_LAC);
 	player->play();
 }
 
@@ -260,18 +260,25 @@ void MainWindow::loadLocalConfig()
 	playConfig->stopWhenMin = 1;
 }
 
-void MainWindow::initPlayWidget(int flag)
+void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString lrclink)
 {
-	if (flag != curPlayFlag){
+	if (!isLocal){
 		delete playWidget;
-		if (flag == PLAY_MUSIC){
+		playWidget = new MusicWidget(info, lrclink, this, player);
+		subLabel->hide();
+	}
+	else if (isVideo != curPlayFlag){
+		delete playWidget;
+		if (isVideo == PLAY_MUSIC){
 			playWidget = new MusicWidget(this, player);
 			curPlayFlag = PLAY_MUSIC;
+			subLabel->hide();
 		}
 		else{
 			playWidget = new VideoWidget(this);
 			player->setVideoOutput((QVideoWidget*)playWidget);
 			curPlayFlag = PLAY_VIDEO;
+			subLabel->show();
 		}
 	}
 	player->play();
@@ -306,20 +313,20 @@ void MainWindow::searchButtonClicked()
 	}
 }
 
-void MainWindow::getInfoComplete(bool flag, QString info, QString link)
+void MainWindow::getInfoComplete(bool flag, InfoNetMusic &info)
 {
-	qDebug() << info << endl;
-	qDebug() << link << endl;
-	initPlayWidget(PLAY_MUSIC);
+	qDebug() << info.id << endl;
+	qDebug() << info.name << endl;
+	qDebug() << info.link << endl;
+	qDebug() << info.lrclink << endl;
+	qDebug() << info.info << endl;
 	int id;
-	//flag = true 时保证
+	//flag = true 是新添加的歌曲
 	if (flag){
 		//将链接加到播放列表
-		playlistWindow->addItemFromNet(info, link, id);
+		playlistWindow->addItemFromNet(info.name, info.link, info.id);
 	}
-	else{
-		//playlistWindow
-	}
+	initPlayWidget(PLAY_MUSIC, MODEL_NET, info.info, info.lrclink);
 }
 
 void MainWindow::fontChanged(QFont font)
@@ -345,7 +352,13 @@ void MainWindow::savePlayList()
 void MainWindow::itemDoubleClicked(QListWidgetItem *item)
 {
 	int flag = item->statusTip().toInt();
-	initPlayWidget(flag);
+	QString idStr = item->whatsThis();
+	if (idStr == ""){
+		initPlayWidget(flag, MODEL_LAC);
+	}
+	else{
+		searchWindow->getSongInfo(idStr, false);
+	}
 }
 
 void MainWindow::changeEvent(QEvent *event)
