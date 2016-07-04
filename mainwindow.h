@@ -52,7 +52,7 @@ public:
 	void addToPlaylist(QStringList fileNames);
 	void initPlayWidget(int flag);
 public slots:
-	void getInfoComplete(QString res);
+	void getInfoComplete(bool flag, QString info, QString link);
 	void playlistButtonClicked();
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void nextClicked();
@@ -71,7 +71,7 @@ private:
 	QMediaPlaylist *playList;
 	QListWidget *playlistWidget;
 	PlayControls *controls;
-	ControWindow *controlWindow;
+	ControlWindow *controlWindow;
 	SearchWindow *searchWindow;
 	MenuWidget *menuWidget;
 	SubtitleLabel *subLabel;

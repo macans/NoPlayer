@@ -26,7 +26,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	player->play();
 
 	playlistWidget = new QListWidget;
-
 	connect(playlistWidget, SIGNAL(activated(QModelIndex)), this, SLOT(jump(QModelIndex)));
 	connect(playlistWidget, SIGNAL(closeEvent(QCloseEvent*)), this, SLOT(playlistButtonClicked()));
 
@@ -55,12 +54,13 @@ MainWindow::MainWindow(QWidget *parent) :
 	subLabel = new SubtitleLabel(this, playConfig);
 	subLabel->subtitleChanged();
 
-	controlWindow = new ControWindow;
+		controlWindow = new ControlWindow;
 	//controlWindow;
 	connect(controlWindow, SIGNAL(controlWindowClosed()), this, SLOT(controlButtonClicked()));
 	connect(controlWindow, SIGNAL(fontChanged(QFont)), subLabel, SLOT(fontChanged(QFont)));
 	connect(controlWindow, SIGNAL(colorChanged(QColor)), subLabel, SLOT(colorChanged(QColor)));
 	connect(controlWindow, SIGNAL(subtitleChanged(QString)), subLabel, SLOT(subtitleChanged(QString)));
+	controlWindow->setHueFUN(((VideoWidget*)playWidget)->hue());
 	controlWindow->hide();
 	//connect(controlWindow, SIGNAL())
 	
@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	searchWindow = new SearchWindow;
 	searchWindow->hide();
-	connect(searchWindow, SIGNAL(getInfoComplete(QString)), this, SLOT(getInfoComplete(QString)));
+	connect(searchWindow, SIGNAL(getInfoComplete(bool, QString, QString)), this, SLOT(getInfoComplete(bool, QString, QString)));
 
 	connect(player, SIGNAL(positionChanged(qint64)), subLabel, SLOT(updateSubTitle(qint64)));
 	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
@@ -340,9 +340,21 @@ void MainWindow::searchButtonClicked()
 	}
 }
 
-void MainWindow::getInfoComplete(QString res)
+void MainWindow::getInfoComplete(bool flag, QString info, QString link)
 {
-
+	qDebug() << info << endl;
+	qDebug() << link << endl;
+	initPlayWidget(PLAY_MUSIC);
+	if (flag){
+		//将链接加到播放列表
+		playlistWidget->addItem("Beyond");
+		playList->addMedia(QUrl(link));
+		int u = playList->mediaCount();
+		playList->setCurrentIndex(u - 1);
+	}
+	else{
+		
+	}
 }
 
 

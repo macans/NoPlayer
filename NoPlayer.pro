@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     about_ui.cpp \
     subtitlelabel.cpp \
     searchwindow.cpp \
-    controlwindow.cpp
+    controlwindow.cpp \
+    shortcut.cpp
 
 
 HEADERS  += mainwindow.h \
@@ -36,12 +37,14 @@ HEADERS  += mainwindow.h \
     subtitlelabel.h \
     playconfig.h \
     searchwindow.h \
-    controlwindow.h
+    controlwindow.h \
+    shortcut.h
 
 
 
-FORMS    += controlwidget.ui \
-    about_ui.ui
+FORMS    += controlwindow.ui \
+    about_ui.ui \
+    shortcut.ui
 
 
 RESOURCES += \

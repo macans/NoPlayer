@@ -17,19 +17,60 @@
 #include <QString>
 #include <QGridLayout>
 #include <QSlider>
-ControWindow::ControWindow(QWidget *parent) :
+#include <QRadioButton>
+#include <QComboBox>
+#include <QMessageBox>
+ControlWindow::ControlWindow(QWidget *parent) :
 QWidget(parent)
 {
 	//-------------------------------------------------------
-	//1 //tabwidget
-	QTabWidget *tabwidget = new QTabWidget();
+    //1 //tabwidget
+    QTabWidget *tabwidget = new QTabWidget();
+
 	QWidget *widget1 = new QWidget();
-	QLabel *volumelab = new QLabel("音量");
-	QSlider *volume = new QSlider(Qt::Horizontal);;
-	QHBoxLayout *hbox = new QHBoxLayout();
-	hbox->addWidget(volumelab);
-	hbox->addWidget(volume);
-	widget1->setLayout(hbox);
+    QGridLayout *grid1 = new QGridLayout();
+    QLabel *Lmini_pause = new QLabel("Stop");
+    QLabel *Lsize = new QLabel("Size while open");
+    QPushButton *Lshortcut_key = new QPushButton("View shorcut");
+    QRadioButton *Cmini_pause=new QRadioButton();
+    QComboBox *Csize=new QComboBox();
+    //QIcon icon5(":/image/sound.png");
+    Csize->addItem("默认尺寸");
+    //QIcon icon6(":/image/sound.png");
+    Csize->addItem("视频尺寸");
+    //QIcon icon7(":/image/sound.png");
+    Csize->addItem("全屏");
+
+    /*QLabel *play_pause = new QLabel("播放／暂停 :");
+    QLabel *exit = new QLabel("退出:");
+    QLabel *slow_down= new QLabel("快进:");
+    QLabel *speed_up = new QLabel("快退:");
+
+    QLabel *Lplay_pause = new QLabel("space");
+    QLabel *Lexit = new QLabel("ctr+q");
+    QLabel *Lslow_down= new QLabel(">");
+    QLabel *Lspeed_up = new QLabel("<");*/
+
+    //grid1->addWidget(volumelab, 0,0);
+    //grid1->addWidget(volume,0,1,1,2);
+    grid1->addWidget(Cmini_pause, 0,1);
+    grid1->addWidget(Lmini_pause,0,0);
+    grid1->addWidget(Lsize, 1,0);
+    grid1->addWidget(Csize, 1,1,1,2);
+    grid1->addWidget(Lshortcut_key, 2,0);
+
+    /*grid1->addWidget(play_pause,2,1);
+    grid1->addWidget(Lplay_pause,2,2);
+
+    grid1->addWidget(exit, 3,1);
+    grid1->addWidget(Lexit, 3,2);
+
+    grid1->addWidget(slow_down, 4,1);
+    grid1->addWidget(Lslow_down, 4,2);
+    grid1->addWidget(speed_up, 5,1);
+    grid1->addWidget(Lspeed_up, 5,2);*/
+
+    widget1->setLayout(grid1);
 
 	//2
 	QWidget *widget2 = new QWidget();
@@ -55,11 +96,11 @@ QWidget(parent)
 	QGridLayout *grid3 = new QGridLayout();
 	QWidget *widget3 = new QWidget();
 	QLabel *brightnesslab = new QLabel("亮度:");
-	QSlider *brightness = new QSlider(Qt::Horizontal);
+    //QSlider *brightness = new QSlider(Qt::Horizontal);
 	QLabel *huelab = new QLabel("色彩:");
-	QSlider *hue = new QSlider(Qt::Horizontal);
-	QLabel *contrastlab = new QLabel("灰度:");
-	QSlider *contrast = new QSlider(Qt::Horizontal);
+    //QSlider *hue = new QSlider(Qt::Horizontal);
+    QLabel *contrastlab = new QLabel(" 对比度:");
+    //QSlider *contrast = new QSlider(Qt::Horizontal);
 	grid3->addWidget(brightnesslab, 0, 0);
 	grid3->addWidget(brightness, 0, 1);
 	grid3->addWidget(huelab, 1, 0);
@@ -72,10 +113,10 @@ QWidget(parent)
 	QGridLayout *grid4 = new QGridLayout();
 	QWidget *widget4 = new QWidget();
 	QLabel *seek = new QLabel("搜索");
-	QPushButton *seekbeforemi = new QPushButton(">>");
-	QPushButton *seekbeforesec = new QPushButton(">");
-	QPushButton *seekaftermi = new QPushButton("<");
-	QPushButton *seekaftersec = new QPushButton("<<");
+    QPushButton *seekbeforemi = new QPushButton("<<");
+    QPushButton *seekbeforesec = new QPushButton("<");
+    QPushButton *seekaftermi = new QPushButton(">");
+    QPushButton *seekaftersec = new QPushButton(">>");
 	QLabel *speed = new QLabel("播放速度");
 	QPushButton *slow = new QPushButton("减慢");
 	QPushButton *speedup = new QPushButton("加快");
@@ -93,28 +134,27 @@ QWidget(parent)
 	widget4->setLayout(grid4);
 
 
-	QIcon icon1("/User1/tianfeihan/Deaktop/1.png");
-	tabwidget->addTab(widget1, icon1, "音频");
+    QIcon icon1(":/image/sound.png");
+    tabwidget->addTab(widget1, icon1, "常规");
 
-	QIcon icon2("/User1/tianfeihan/Deaktop/1.png");
+    QIcon icon2(":/image/subtitle.png");
 	tabwidget->addTab(widget2, icon2, "字幕");
 
-	QIcon icon3("/User1/tianfeihan/Deaktop/1.png");
+    QIcon icon3(":/image/video.png");
 	tabwidget->addTab(widget3, icon3, "视频");
 
-	QIcon icon4("/User1/tianfeihan/Deaktop/1.png");
+    QIcon icon4(":/image/play.png");
 	tabwidget->addTab(widget4, icon4, "播放");
 
 	QHBoxLayout *total = new QHBoxLayout();
 	total->addWidget(tabwidget);
 	this->setLayout(total);
-	this->resize(300, 300);
+    this->setFixedSize(400, 300);//fix size
 	this->setWindowTitle("控制面板");
 
 
-
 	//volume
-	connect(volume, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
+    //connect(volume, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
 	//brightness
 	connect(brightness, SIGNAL(valueChanged(int)), this, SIGNAL(changeBrightness(int)));
 	//hue
@@ -122,11 +162,13 @@ QWidget(parent)
 	//contrast
 	connect(contrast, SIGNAL(valueChanged(int)), this, SIGNAL(changeContrast(int)));
 	//show color
-	connect(morecolor, SIGNAL(clicked(bool)), this, SLOT(colorshowFUN()));
+    connect(morecolor, SIGNAL(clicked(bool)), this, SLOT(colorshowFUN()));
+    //------------------------------------------
 	//show font
-	connect(morefont, SIGNAL(clicked(bool)), this, SLOT(fontshowFUN()));
+    connect(morefont, SIGNAL(clicked(bool)), this, SLOT(fontshowFUN()));
 	//show zimu
-	connect(morezimu, SIGNAL(clicked(bool)), this, SLOT(zimushowFUN()));
+    connect(morezimu, SIGNAL(clicked(bool)), this, SLOT(zimushowFUN()));
+    //-------------------------------------------
 
 	connect(seekbeforemi, SIGNAL(clicked(bool)), this, SIGNAL(seekbeforemi()));
 
@@ -138,16 +180,26 @@ QWidget(parent)
 
 	connect(speedup, SIGNAL(clicked(bool)), this, SIGNAL(spedup()));
 	connect(defaults, SIGNAL(clicked(bool)), this, SIGNAL(defaltspeed()));
+    //when video opened,the size
+    connect(Csize,SIGNAL(currentIndexChanged(int)),this,SIGNAL(sizeChanged(int)));
 
+    //minisize then pause
+    //connect(Cmini_pause,SIGNAL(currentIndexChanged(int)),this,SIGNAL(sizeChanged(int)));
+    //
+
+
+    connect(Cmini_pause,SIGNAL(clicked(bool)),this,SIGNAL(minithenpause(bool)));
+
+    connect(Lshortcut_key,SIGNAL(clicked(bool)),this,SLOT(showshortcutKey()));
 	//--------------------------------------------------------------
 }
 
-ControWindow::~ControWindow()
+ControlWindow::~ControlWindow()
 {
-	emit controlWindowClosed();
+    emit ControlWindowClosed();
 }
 
-void ControWindow::colorshowFUN()
+void ControlWindow::colorshowFUN()
 {
 	colorshow->setAutoFillBackground(true);
 	QColorDialog dialog(Qt::red, this);
@@ -156,34 +208,63 @@ void ControWindow::colorshowFUN()
 	QColor color = dialog.currentColor();
 	if (color.isValid()){
 		colorshow->setPalette(QPalette(color));
+        emit colorchanged(color);
 	}
 
 }
 
-void ControWindow::fontshowFUN(){
+void ControlWindow::fontshowFUN(){
 	bool ok;
 	QFont  font = QFontDialog::getFont(&ok);
 	if (ok){
-		QString name = font.family();
+        QString fontname=font.family();
 		fontshow->setFont(font);
+        emit fontChanged(font);
 	}
 	else {
 
 	}
 }
 
-void ControWindow::zimushowFUN()
+void ControlWindow::zimushowFUN()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("打开文件"), "/", tr("字幕(*srt)"));
-    //QString filename = QFileDialog::getOpenFileName(this, tr("文件对话框"), "/", tr("视频文件(*mp4)"));
+
 }
 
-void ControWindow::doSome()
+void ControlWindow::doSome()
 {
 	int a = 1;
 }
 
-void ControWindow::closeEvent(QCloseEvent *event)
+void ControlWindow::closeEvent(QCloseEvent *event)
 {
-	emit controlWindowClosed();
+    emit ControlWindowClosed();
 }
+
+/*void ControlWindow::setVolume(int number1){
+    thenumber1=number1;
+    volume->setValue(thenumber1);
+}*/
+
+void ControlWindow::setHueFUN(int number2){
+    thenumber2=number2;
+    hue->setValue(thenumber2);
+}
+ void ControlWindow::setContrastFUN(int number3){
+     thenumber3=number3;
+     contrast->setValue(thenumber3);
+ }
+  void ControlWindow::setBritghtnessFUN(int number4){
+      thenumber4=number4;
+      brightness->setValue(thenumber4);
+
+  }
+
+   void ControlWindow::showshortcutKey()
+      {
+      shortcut *shortcu=new shortcut();
+       shortcu->show();
+   }
+
+
