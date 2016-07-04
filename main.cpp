@@ -7,20 +7,23 @@
 #include <QApplication>
 #include <QTextCodec>
 #include <QMediaPlaylist>
-
+#include <QNetworkReply>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QMediaPlayer *musicplayer = new QMediaPlayer;
-    musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\music.mp3"));
-    MusicWidget w(0,musicplayer);
+    //musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\238976206.mp3"));
+    musicplayer->setMedia(QUrl("http://yinyueshiting.baidu.com/data2/music/238976206/8775781467622861128.mp3?xcode=d1e1ecd2f82fa083554bf4edd997f8d2"));
+    QString lrclink = "http://musicdata.baidu.com/data2/lrc/238975978/238975978.lrc";
+    //MusicWidget w(songinfo,lrclink,0,musicplayer);
+    //MusicWidget w(0,musicplayer);
     //MainWindow w;
     //PlayControls w;
 	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
 	QTextCodec::setCodecForLocale(codec);
 	//ControlWidget w;
-    w.show();
+    //w.show();
 
     return a.exec();
 }
@@ -52,4 +55,3 @@ int main(int argc, char *argv[])
     MusicWidget w(0,musicPlayer);
     w.show();
     return a.exec();*/
-
