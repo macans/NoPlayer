@@ -9,23 +9,25 @@ MainWindow::MainWindow(QWidget *parent) :
 	mousePressed = false;
 	controlState = false;
 	menuState = false;
+	curPlayFlag = -1;
 	loadLocalConfig();
 
 	playWidget = NULL;
 	player = new QMediaPlayer(this);
 	playList = new QMediaPlaylist();
 	player->setPlaylist(playList);
-	player->setMedia(QUrl::fromLocalFile("E:\\test.mkv"));
+	//player->setMedia(QUrl::fromLocalFile("E:\\test.mkv"));
 	
 	//播放视频
-	playWidget = new VideoWidget(this);
+	//playWidget = new VideoWidget(this);
 	//playWidget = new MusicWidget(this, player);
 	player->setVideoOutput((QVideoWidget*)playWidget);
 
 	player->setVolume(50);
 	player->play();
 
-	playlistWindow = new PlaylistWindow(playList, this);
+	playlistWindow = new PlaylistWindow(playList);
+	connect(playlistWindow, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 
 	//下方控制块
 	controls = new PlayControls(this);
@@ -221,18 +223,7 @@ void MainWindow::openFile()
 {
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
 	//添加播放列表
-	bool flag;
-	//bool flag = playlistWindow->addItemFromLocal(fileNames);
-	if (flag != curPlayFlag){
-		delete playWidget;
-		if (flag == PLAY_MUSIC){
-			playWidget = new MusicWidget(this, player);
-		}
-		else{
-			playWidget = new VideoWidget(this);
-			player->setVideoOutput((QVideoWidget*)playWidget);
-		}
-	}
+	int flag = playlistWindow->addItemFromLocal(fileNames);
 	initPlayWidget(flag);
 	player->play();
 }
@@ -271,6 +262,19 @@ void MainWindow::loadLocalConfig()
 
 void MainWindow::initPlayWidget(int flag)
 {
+	if (flag != curPlayFlag){
+		delete playWidget;
+		if (flag == PLAY_MUSIC){
+			playWidget = new MusicWidget(this, player);
+			curPlayFlag = PLAY_MUSIC;
+		}
+		else{
+			playWidget = new VideoWidget(this);
+			player->setVideoOutput((QVideoWidget*)playWidget);
+			curPlayFlag = PLAY_VIDEO;
+		}
+	}
+	player->play();
 	displayLayout->addWidget(playWidget);
 	connect(controlWindow, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
 	connect(controlWindow, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
@@ -340,7 +344,8 @@ void MainWindow::savePlayList()
 
 void MainWindow::itemDoubleClicked(QListWidgetItem *item)
 {
-
+	int flag = item->statusTip().toInt();
+	initPlayWidget(flag);
 }
 
 void MainWindow::changeEvent(QEvent *event)

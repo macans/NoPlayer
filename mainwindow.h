@@ -6,8 +6,8 @@
 #define PLAYSINGLE	0x03
 #define PLAYRANDOM	0x04
 
-#define PLAY_MUSIC	true
-#define PLAY_VIDEO	false
+#define PLAY_MUSIC	0x00
+#define PLAY_VIDEO	0x01
 
 #define VOLUME_STEP	10
 #define VOLUME_MAX	100
@@ -72,6 +72,7 @@ public:
 public slots:
 	//播放列表
 	void itemDoubleClicked(QListWidgetItem *item);
+
 	//控制面板
 	void fontChanged(QFont font);
 	void colorChanged(QColor color);
@@ -116,7 +117,7 @@ private:
 	bool searchState;
 	bool controlState;
 	bool menuState;
-	bool curPlayFlag;
+	int curPlayFlag;
 	QHBoxLayout *displayLayout, *controlLayout;
 	QVBoxLayout *layout;
 };

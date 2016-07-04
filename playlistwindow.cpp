@@ -4,7 +4,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
 {
     playlist = playList;
     listWidget = new QListWidget(this);
-    QStringList tempList;
+    /*QStringList tempList;
     tempList.append("F:/math/test.mp4");
     tempList<<"C://我还能这.mp3";
     tempList.append("C://至少还有你.mp3");
@@ -22,7 +22,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     this->addItemFromNet("Beyond-海阔天空.mp3","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
     this->addItemFromNet("Beyond-海阔天空.mp3","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
     this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-
+	*/
 
 //----布局---------------------------------------
     QHBoxLayout *topLayout = new QHBoxLayout;
@@ -58,7 +58,6 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     connect(listWidget,SIGNAL(itemActivated(QListWidgetItem*)),this,SIGNAL(itemActivated(QListWidgetItem*)));
     connect(listWidget,SIGNAL(itemChanged(QListWidgetItem*)),this,SIGNAL(itemChanged(QListWidgetItem*)));
     connect(listWidget,SIGNAL(itemClicked(QListWidgetItem*)),this,SIGNAL(itemClicked(QListWidgetItem*)));
-    connect(listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SIGNAL(itemDoubleClicked(QListWidgetItem*)));
     connect(listWidget,SIGNAL(itemEntered(QListWidgetItem*)),this,SIGNAL(itemEntered(QListWidgetItem*)));
     connect(listWidget,SIGNAL(itemPressed(QListWidgetItem*)),this,SIGNAL(itemPressed(QListWidgetItem*)));
     connect(listWidget,SIGNAL(itemSelectionChanged()),this,SIGNAL(itemSelectionChanged()));
@@ -136,14 +135,13 @@ void PlaylistWindow::clearSearch()
 //将item设置为播放项，并将原来的项设置为普通状态的样式
 void PlaylistWindow::setItemPlay(QListWidgetItem *item)
 {
-    if(item != listWidget->item(playlist->currentIndex())) {
-        if(listWidget->item(playlist->currentIndex())!=NULL) {
-           this->setItemNormalView(listWidget->item(playlist->currentIndex()));
-        }
-        playlist->setCurrentIndex(listWidget->row(item));
-        listWidget->setCurrentItem(item);
-        this->setItemPlayView(item);
-    }
+	if (listWidget->item(playlist->currentIndex()) != NULL) {
+		this->setItemNormalView(listWidget->item(playlist->currentIndex()));
+	}
+	playlist->setCurrentIndex(listWidget->row(item));
+	listWidget->setCurrentItem(item);
+	this->setItemPlayView(item);
+	emit itemDoubleClicked(item);
 }
 //将行号为row的设置为播放项
 void PlaylistWindow::setItemPlay(int row)
@@ -156,7 +154,9 @@ void PlaylistWindow::setItemPlay(int row)
 //设置播放状态下的样式
 void PlaylistWindow::setItemPlayView(QListWidgetItem *item)
 {
-    item->setTextColor(ITEM_COLOR_PLAY);
+	if (item != NULL){
+		item->setTextColor(ITEM_COLOR_PLAY);
+	}
 }
 
 //设置普通状态下的样式
@@ -248,7 +248,7 @@ int PlaylistWindow::getMediaType(const QString fileName)
         qDebug() << suffixName << "-suffix";
         if (suffixName == "mp3" || suffixName == "flac" ||suffixName == "wmv") {
             return MEDIA_TYPE_MUSIC;
-        } else if(suffixName == "mp4" ||suffixName == "avi") {
+        } else if(suffixName == "mp4" ||suffixName == "avi" || suffixName == "mkv") {
             return MEDIA_TYPE_VIDEO;
         } else {
             return -1;
