@@ -117,8 +117,14 @@ void SearchWindow::getSongInfo(QString songId, bool isNewSong)
 void SearchWindow::infoReplyFinished()
 {
 	info = infoReply->readAll();
-	info = info.replace("\\", "");
+	//info = info.replace("\\", "");
 	qDebug() << info << endl;
+	QScriptEngine engine;
+	QScriptValue val = engine.evaluate("value=" + info);
+	qDebug() << val.toString() << endl;
+	int code = val.property("errorCode").toInt32();
+	qDebug() << val.isObject() << " " << val.isValid() << endl;
+	qDebug() << code << endl;
 	if (!isNewSong){
 		//在播放列表中打开
 		emit getInfoComplete(false, info);
@@ -131,7 +137,6 @@ void SearchWindow::infoReplyFinished()
 void SearchWindow::linkReplyFinished()
 {
 	QString res = linkReply->readAll();
-	res = res.replace("\\", "");
 	qDebug() << res << endl;
 	QScriptEngine engine;
 	QScriptValue val = engine.evaluate("value=" + res);
