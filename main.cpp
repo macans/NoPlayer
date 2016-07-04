@@ -1,8 +1,10 @@
 #include "mainwindow.h"
 #include "playcontrols.h"
-#include "controlwidget.h"
+#include "controlwindow.h"
 #include "menuwidget.h"
 #include "musicwidget.h"
+#include "subtitlelabel.h"
+#include "searchwindow.h"
 
 #include <QApplication>
 #include <QTextCodec>
@@ -12,14 +14,15 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    QMediaPlayer *musicplayer = new QMediaPlayer;
-    musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\music.mp3"));
-    MusicWidget w(0,musicplayer);
-    //MainWindow w;
-    //PlayControls w;
+    //QMediaPlayer *musicplayer = new QMediaPlayer;
+    //musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\music.mp3"));
+    //MusicWidget w(0,musicplayer);
+    MainWindow w;
+	//SearchWindow w;
+   // PlayControls w;
 	QTextCodec *codec = QTextCodec::codecForName("UTF-8");
 	QTextCodec::setCodecForLocale(codec);
-	//ControlWidget w;
+	//ControWindow w;
     w.show();
 
     return a.exec();
@@ -37,9 +40,12 @@ int main(int argc, char *argv[])
 		右键响应弹出
 
 	核心
-		打开Youtube 视频链接并播放
 		解析字幕文件，同步设置
+		网络搜索		
+			利用 网易云音乐API 搜索音乐并播放
+			利用 BING API 搜索视频并播放
 
+	最后界面改良也是一个大问题
 	待讨论
 		打开最近播放
 */

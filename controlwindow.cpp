@@ -1,4 +1,4 @@
-#include "controlwidget.h"
+#include "controlwindow.h"
 
 #include <QTabWidget>
 #include <QHBoxLayout>
@@ -17,7 +17,7 @@
 #include <QString>
 #include <QGridLayout>
 #include <QSlider>
-ControlWidget::ControlWidget(QWidget *parent) :
+ControWindow::ControWindow(QWidget *parent) :
 QWidget(parent)
 {
 	//-------------------------------------------------------
@@ -142,12 +142,12 @@ QWidget(parent)
 	//--------------------------------------------------------------
 }
 
-ControlWidget::~ControlWidget()
+ControWindow::~ControWindow()
 {
-	emit controlWidgetClosed();
+	emit controlWindowClosed();
 }
 
-void ControlWidget::colorshowFUN()
+void ControWindow::colorshowFUN()
 {
 	colorshow->setAutoFillBackground(true);
 	QColorDialog dialog(Qt::red, this);
@@ -160,7 +160,7 @@ void ControlWidget::colorshowFUN()
 
 }
 
-void ControlWidget::fontshowFUN(){
+void ControWindow::fontshowFUN(){
 	bool ok;
 	QFont  font = QFontDialog::getFont(&ok);
 	if (ok){
@@ -172,18 +172,18 @@ void ControlWidget::fontshowFUN(){
 	}
 }
 
-void ControlWidget::zimushowFUN()
+void ControWindow::zimushowFUN()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("打开文件"), "/", tr("字幕(*srt)"));
     //QString filename = QFileDialog::getOpenFileName(this, tr("文件对话框"), "/", tr("视频文件(*mp4)"));
 }
 
-void ControlWidget::doSome()
+void ControWindow::doSome()
 {
 	int a = 1;
 }
 
-void ControlWidget::closeEvent(QCloseEvent *event)
+void ControWindow::closeEvent(QCloseEvent *event)
 {
-	emit controlWidgetClosed();
+	emit controlWindowClosed();
 }

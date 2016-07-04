@@ -32,6 +32,9 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 	volumeSlider->setRange(0, 100);
 	connect(volumeSlider, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
 
+	searchButton = new QToolButton(this);
+	connect(searchButton, SIGNAL(clicked()), this, SIGNAL(searchButtonClicked()));
+
 	playlistButton = new QToolButton(this);
 	playlistButton->setWindowIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
 	connect(playlistButton, SIGNAL(clicked()), this, SIGNAL(playlistButtonClicked()));
@@ -56,9 +59,10 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 	widgetsLayout->addWidget(nextButton);
 	widgetsLayout->addWidget(openButton);
 	widgetsLayout->addWidget(labelDuration);
+	widgetsLayout->addWidget(searchButton);
 	widgetsLayout->addWidget(playlistButton);
 	widgetsLayout->addWidget(controlButton);
-
+	
 	QBoxLayout *layout = new QVBoxLayout;
 	layout->addLayout(slidersLayout);
 	layout->addLayout(widgetsLayout);

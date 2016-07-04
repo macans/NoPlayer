@@ -4,13 +4,13 @@
 #include <QWidget>
 #include<QLabel>
 
-class ControlWidget : public QWidget
+class ControWindow : public QWidget
 {
 	Q_OBJECT
 
 public:
-	explicit ControlWidget(QWidget *parent = 0);
-	~ControlWidget();
+	explicit ControWindow(QWidget *parent = 0);
+	~ControWindow();
 	void closeEvent(QCloseEvent *event);
 	//void setHue(int d)
 signals:
@@ -25,7 +25,10 @@ signals:
 	void slowdown();
 	void spedup();
 	void defaltspeed();
-	void controlWidgetClosed();
+	void controlWindowClosed();
+	void fontChanged(QFont font);
+	void subtitleChanged(QString subname);
+	void colorChanged(QColor color);
 	private slots:
 	void colorshowFUN();
 

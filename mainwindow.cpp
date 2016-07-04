@@ -4,16 +4,19 @@ MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent)
 {
 
+	searchState = false;
 	playlistState = false;
 	mousePressed = false;
 	controlState = false;
 	menuState = false;
+	loadLocalConfig();
+
 	playWidget = NULL;
 	player = new QMediaPlayer(this);
 	playList = new QMediaPlaylist();
 	player->setPlaylist(playList);
-	player->setMedia(QUrl::fromLocalFile("E:\\Flash\\Youtube\\Jiang\\HK.mp4"));
-	subWidget = new SubtitleWidget(this, playConfig);
+	player->setMedia(QUrl::fromLocalFile("E:\\test.mkv"));
+	
 	//播放视频
 	playWidget = new VideoWidget(this);
 	//playWidget = new MusicWidget(this, player);
@@ -42,25 +45,38 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(controls, SIGNAL(open()), this, SLOT(openFile()));
 	connect(controls, SIGNAL(changeVolume(int)), player, SLOT(setVolume(int)));
 	connect(controls, SIGNAL(changeMuting(bool)), player, SLOT(setMuted(bool)));
+	connect(controls, SIGNAL(searchButtonClicked()), this, SLOT(searchButtonClicked()));
 	connect(controls, SIGNAL(playlistButtonClicked()), this, SLOT(playlistButtonClicked()));
 	connect(controls, SIGNAL(controlButtonClicked()), this, SLOT(controlButtonClicked()));
 	connect(controls, SIGNAL(seek(int)), this, SLOT(seek(int)));
-	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
-	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
+	
 	//controls->hide();
 	
-	controlWidget = new ControlWidget;
-	//controlWidget;
-	connect(controlWidget, SIGNAL(controlWidgetClosed()), this, SLOT(controlButtonClicked()));
-	controlWidget->hide();
-	//connect(controlWidget, SIGNAL())
+	subLabel = new SubtitleLabel(this, playConfig);
+	subLabel->subtitleChanged();
+
+	controlWindow = new ControWindow;
+	//controlWindow;
+	connect(controlWindow, SIGNAL(controlWindowClosed()), this, SLOT(controlButtonClicked()));
+	connect(controlWindow, SIGNAL(fontChanged(QFont)), subLabel, SLOT(fontChanged(QFont)));
+	connect(controlWindow, SIGNAL(colorChanged(QColor)), subLabel, SLOT(colorChanged(QColor)));
+	connect(controlWindow, SIGNAL(subtitleChanged(QString)), subLabel, SLOT(subtitleChanged(QString)));
+	controlWindow->hide();
+	//connect(controlWindow, SIGNAL())
 	
 	menuWidget = new MenuWidget;
 	menuWidget->hide();
 
+	searchWindow = new SearchWindow;
+	searchWindow->hide();
+	connect(searchWindow, SIGNAL(getInfoComplete(QString)), this, SLOT(getInfoComplete(QString)));
+
+	connect(player, SIGNAL(positionChanged(qint64)), subLabel, SLOT(updateSubTitle(qint64)));
 	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
 	connect(player, SIGNAL(positionChanged(qint64)), controls, SLOT(positionChanged(qint64)));
 	connect(player, SIGNAL(durationChanged(qint64)), controls, SLOT(durationChanged(qint64)));
+	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
+	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
 
 	//布局
 	displayLayout = new QHBoxLayout;
@@ -69,11 +85,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	controlLayout = new QHBoxLayout;
 	controlLayout->addWidget(controls);
+	QHBoxLayout *subLayout = new QHBoxLayout;
+	subLayout->addWidget(subLabel);
 	//controlLayout->addStretch(1);
 
 	layout = new QVBoxLayout;
 	layout->setMargin(0);
 	layout->addLayout(displayLayout, 2);
+	layout->addLayout(subLayout);
 	layout->addLayout(controlLayout);
 	this->setLayout(layout);
 
@@ -164,14 +183,14 @@ void MainWindow::previousClicked()
 void MainWindow::fastforword(int msec)
 {
 	qint64 curPos = player->position();
-	msec = (msec == 0 ? playConfig->SecForword() : msec);
+	msec = (msec == 0 ? playConfig->secForword : msec);
 	player->setPosition(curPos + msec);
 }
 
 void MainWindow::rewind(int msec)
 {
 	qint64 curPos = player->position();
-	msec = (msec == 0 ? playConfig->SecRewind() : msec);
+	msec = (msec == 0 ? playConfig->secRewind : msec);
 	player->setPosition(curPos - msec);
 }
 
@@ -256,11 +275,11 @@ void MainWindow::jump(const QModelIndex &index)
 void MainWindow::controlButtonClicked()
 {
 	if (controlState){
-		controlWidget->hide();
+		controlWindow->hide();
 		controlState = false;
 	}
 	else{
-		controlWidget->show();
+		controlWindow->show();
 		controlState = true;
 	}
 }
@@ -274,9 +293,10 @@ void MainWindow::loadLocalConfig()
 {
 	//加载本地设置
 	playConfig = new PlayConfig;
-	playConfig->SecForword(5000);
-	playConfig->SecRewind(5000);
-	playConfig->Rate(1);
+	playConfig->secForword = 5000;
+	playConfig->secRewind = 5000;
+	playConfig->rate = 1;
+	playConfig->subDelay = 0;
 }
 
 void MainWindow::initPlayWidget(int flag)
@@ -290,9 +310,9 @@ void MainWindow::initPlayWidget(int flag)
 		player->setVideoOutput((QVideoWidget*)playWidget);
 	}
 	displayLayout->addWidget(playWidget);
-	connect(controlWidget, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
-	connect(controlWidget, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
-	connect(controlWidget, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
+	connect(controlWindow, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
+	connect(controlWindow, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
+	connect(controlWindow, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
 	connect(playWidget, SIGNAL(rightButtonClicked(QPoint)), this, SLOT(openMenu(QPoint)));
 }
 
@@ -306,6 +326,23 @@ void MainWindow::openMenu(QPoint pos)
 		menuWidget->show();
 		menuState = true;
 	}
+}
+
+void MainWindow::searchButtonClicked()
+{
+	if (searchState){
+		searchWindow->hide();
+		searchState = false;
+	}
+	else{
+		searchWindow->show();
+		searchState = true;
+	}
+}
+
+void MainWindow::getInfoComplete(QString res)
+{
+
 }
 
 

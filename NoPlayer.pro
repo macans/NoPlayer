@@ -17,23 +17,26 @@ SOURCES += main.cpp\
     mainwindow.cpp \
     musicwidget.cpp \
     menuwidget.cpp \
-    controlwidget.cpp \
     playlistmodel.cpp \
     videowidget.cpp \
     playcontrols.cpp \
     about_ui.cpp \
-    subtitlewidget.cpp
+    subtitlelabel.cpp \
+    searchwindow.cpp \
+    controlwindow.cpp
 
 
 HEADERS  += mainwindow.h \
     musicwidget.h \
     menuwidget.h \
-    controlwidget.h \
     playlistmodel.h \
     videowidget.h \
     playcontrols.h \
     about_ui.h \
-    subtitlewidget.h
+    subtitlelabel.h \
+    playconfig.h \
+    searchwindow.h \
+    controlwindow.h
 
 
 

@@ -25,11 +25,12 @@
 
 #include "videowidget.h"
 #include "playcontrols.h"
-#include "ControlWidget.h"
+#include "controlwindow.h"
 #include "musicwidget.h"
 #include "menuwidget.h"
 #include "playconfig.h"
-#include "subtitlewidget.h"
+#include "subtitlelabel.h"
+#include "searchwindow.h"
 
 
 class MainWindow : public QWidget
@@ -50,7 +51,8 @@ public:
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
 	void addToPlaylist(QStringList fileNames);
 	void initPlayWidget(int flag);
-private slots:
+public slots:
+	void getInfoComplete(QString res);
 	void playlistButtonClicked();
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 	void nextClicked();
@@ -59,6 +61,7 @@ private slots:
 	void rewind(int msec = 0);
 	void openFile();
 	void controlButtonClicked();
+	void searchButtonClicked();
 	void jump(const QModelIndex &index);
 	void seek(int seconds);
 	void openMenu(QPoint pos);
@@ -68,14 +71,16 @@ private:
 	QMediaPlaylist *playList;
 	QListWidget *playlistWidget;
 	PlayControls *controls;
-	ControlWidget *controlWidget;
+	ControWindow *controlWindow;
+	SearchWindow *searchWindow;
 	MenuWidget *menuWidget;
-	SubtitleWidget *subWidget;
+	SubtitleLabel *subLabel;
 	QSize wndSize;
 	PlayConfig *playConfig;
 
 	bool mousePressed;
 	bool playlistState;
+	bool searchState;
 	bool controlState;
 	bool menuState;
 	QHBoxLayout *displayLayout, *controlLayout;

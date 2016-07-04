@@ -34,6 +34,7 @@ signals :
 	void changeMuting(bool);
 	void playlistButtonClicked();
 	void controlButtonClicked();
+	void searchButtonClicked();
 	void seek(int progress);
 public slots:
 	void setState(const QMediaPlayer::State state);
@@ -60,6 +61,7 @@ private:
 	QAbstractButton *openButton;
 	QAbstractButton *playlistButton;
 	QAbstractButton *controlButton;
+	QAbstractButton *searchButton;
 	QAbstractSlider *volumeSlider;
 	QSlider *slider;
 	QLabel *labelDuration;
