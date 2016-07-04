@@ -60,7 +60,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(controlWindow, SIGNAL(fontChanged(QFont)), subLabel, SLOT(fontChanged(QFont)));
 	connect(controlWindow, SIGNAL(colorChanged(QColor)), subLabel, SLOT(colorChanged(QColor)));
 	connect(controlWindow, SIGNAL(subtitleChanged(QString)), subLabel, SLOT(subtitleChanged(QString)));
-	controlWindow->setHueFUN(((VideoWidget*)playWidget)->hue());
+	controlWindow->setHueFUN(playConfig->hue);
+	controlWindow->setContrastFUN(playConfig->contrast);
+	controlWindow->setBritghtnessFUN(playConfig->brightness);
 	controlWindow->hide();
 	//connect(controlWindow, SIGNAL())
 	
@@ -107,6 +109,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+	savePlayConfig();
+	savePlayList();
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -297,6 +301,9 @@ void MainWindow::loadLocalConfig()
 	playConfig->secRewind = 5000;
 	playConfig->rate = 1;
 	playConfig->subDelay = 0;
+	playConfig->hue = 50;
+	playConfig->brightness = 50;
+	playConfig->contrast = 50;
 }
 
 void MainWindow::initPlayWidget(int flag)
@@ -356,6 +363,27 @@ void MainWindow::getInfoComplete(bool flag, QString info, QString link)
 		
 	}
 }
+
+void MainWindow::fontChanged(QFont font)
+{
+	playConfig->fontFamily = font.family();
+}
+
+void MainWindow::colorChanged(QColor color)
+{
+	playConfig->colorVal = color.value();
+}
+
+void MainWindow::savePlayConfig()
+{
+	//保存配置
+}
+
+void MainWindow::savePlayList()
+{
+	//保存播放列表
+}
+
 
 
 

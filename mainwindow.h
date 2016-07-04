@@ -51,7 +51,11 @@ public:
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
 	void addToPlaylist(QStringList fileNames);
 	void initPlayWidget(int flag);
+	void savePlayConfig();
+	void savePlayList();
 public slots:
+	void fontChanged(QFont font);
+	void colorChanged(QColor color);
 	void getInfoComplete(bool flag, QString info, QString link);
 	void playlistButtonClicked();
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);

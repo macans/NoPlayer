@@ -96,10 +96,13 @@ QWidget(parent)
 	QGridLayout *grid3 = new QGridLayout();
 	QWidget *widget3 = new QWidget();
 	QLabel *brightnesslab = new QLabel("亮度:");
+	brightness->setRange(-100, 100);
     //QSlider *brightness = new QSlider(Qt::Horizontal);
 	QLabel *huelab = new QLabel("色彩:");
+	hue->setRange(-100, 100);
     //QSlider *hue = new QSlider(Qt::Horizontal);
     QLabel *contrastlab = new QLabel(" 对比度:");
+	contrast->setRange(-100, 100);
     //QSlider *contrast = new QSlider(Qt::Horizontal);
 	grid3->addWidget(brightnesslab, 0, 0);
 	grid3->addWidget(brightness, 0, 1);
