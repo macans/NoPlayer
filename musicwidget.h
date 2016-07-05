@@ -1,6 +1,9 @@
 #ifndef MUSICWIDGET_H
 #define MUSICWIDGET_H
 
+#define MODEL_LAC		1
+#define MODEL_NET		0
+
 #include <QWidget>
 #include <QMediaPlayer>
 #include <QtNetwork>
@@ -28,6 +31,7 @@ public:
 private:
     void createwidgets();
     void getlrc();
+	int curPlayModel;
     QString musicinfo;
     QMediaPlayer *player;
     qint64 duration;

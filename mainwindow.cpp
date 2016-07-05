@@ -186,14 +186,14 @@ void MainWindow::previousClicked()
 void MainWindow::fastforword(int msec)
 {
 	qint64 curPos = player->position();
-	msec = (msec == 0 ? playConfig->secForword : msec);
+	msec = (msec == 0 ? playConfig->msecForword : msec);
 	player->setPosition(curPos + msec);
 }
 
 void MainWindow::rewind(int msec)
 {
 	qint64 curPos = player->position();
-	msec = (msec == 0 ? playConfig->secRewind : msec);
+	msec = (msec == 0 ? playConfig->msecRewind : msec);
 	player->setPosition(curPos - msec);
 }
 
@@ -258,14 +258,15 @@ void MainWindow::loadLocalConfig()
 	QScriptValue val = engine.evaluate("value=" + config);
 	qDebug() << val.toString();
 	playConfig = new PlayConfig;
-	playConfig->secForword = val.property("msec_forword").toInt32();
-	playConfig->secRewind = val.property("msec_rewind").toInt32();
-	playConfig->rate = 1;
+	playConfig->msecForword = val.property("msec_forword").toInt32();
+	playConfig->msecRewind = val.property("msec_rewind").toInt32();
 	playConfig->subDelay = 0;
 	playConfig->hue = 50;
 	playConfig->brightness = 50;
 	playConfig->contrast = 50;
 	playConfig->stopWhenMin = val.property("stop_while_min").toInt32();
+	playConfig->subColor = val.property("sub_color").toInt32();
+	playConfig->subFont = val.property("sub_font").toString();
 }
 
 void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString lrclink)
@@ -339,17 +340,31 @@ void MainWindow::getInfoComplete(bool flag, InfoNetMusic &info)
 
 void MainWindow::fontChanged(QFont font)
 {
-	playConfig->fontFamily = font.family();
+	playConfig->subFont = font.family();
 }
 
 void MainWindow::colorChanged(QColor color)
 {
-	playConfig->colorVal = color.value();
+	playConfig->subColor = color.value();
 }
 
 void MainWindow::savePlayConfig()
 {
 	//保存配置
+	QFile *configFile = new QFile("config.ini");
+	if (configFile->open(QIODevice::WriteOnly | QIODevice::Text)){
+		qDebug() << "save config file failed" << endl;
+	}
+	QString config;
+	config += "{\n";
+	config += "msec_forword: " + QString(playConfig->msecForword) + ",\n";
+	config += "msec_rewind: " + QString(playConfig->msecRewind) + ",\n";
+	config += "sub_font: \"" + playConfig->subFont + "\",\n";
+	config += "sub_color: \"" + QString(playConfig->subColor) + "\",\n";
+	config += "stop_while_min: " + QString(playConfig->stopWhenMin) + ",\n";
+	config += "}";
+	configFile->write(config.toLocal8Bit());
+	configFile->close();
 }
 
 void MainWindow::savePlayList()
@@ -391,10 +406,10 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 			}
 			break;
 		case Qt::Key_Left:
-			rewind(playConfig->secRewind);
+			rewind(playConfig->msecRewind);
 			break;
 		case Qt::Key_Right:
-			fastforword(playConfig->secRewind);
+			fastforword(playConfig->msecRewind);
 			break;
 		case Qt::Key_Up:
 			raiseVolume(VOLUME_STEP);
@@ -449,6 +464,15 @@ void MainWindow::initPlaybackRate()
 void MainWindow::raiseSubtitleDelay(qint64 step)
 {
 	playConfig->subDelay += step;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	savePlayConfig();
+	savePlayList();
+	playlistWindow->close();
+	searchWindow->close();
+	controlWindow->close();
 }
 
 

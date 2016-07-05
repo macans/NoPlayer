@@ -61,7 +61,7 @@ public:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void keyPressEvent(QKeyEvent *event);
-	
+	void closeEvent(QCloseEvent *event);
 	//自定义函数
     void updateWindowSize();
 	bool isPosInRect(const QPoint &pos, const QRect &rect);

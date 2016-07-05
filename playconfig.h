@@ -5,18 +5,16 @@
 
 struct PlayConfig{
 	//播放
-	int secForword;
-	int secRewind;
-	int rate;
+	int msecForword = 5000;
+	int msecRewind = 5000;
 
 	//播放列表
-	QString lastPlayedName;
 	int playMethod;
 
 	//字幕
 	qint64 subDelay;
-	QString fontFamily;
-	int colorVal;
+	QString subFont;
+	int subColor;
 
 	//视频
 	int hue;

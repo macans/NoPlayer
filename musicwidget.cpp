@@ -8,6 +8,7 @@ MusicWidget::MusicWidget(QWidget *parent,QMediaPlayer *player) : QWidget(parent)
   ,piclabel2(0),timelabel(0),infolabel(0),ratelabel(0),lrclabel(0)
 {
     createwidgets();
+	this->curPlayModel = MODEL_LAC;
     player->play();
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
@@ -17,7 +18,13 @@ MusicWidget::MusicWidget(QWidget *parent,QMediaPlayer *player) : QWidget(parent)
 MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QMediaPlayer *player):musicinfo(musicinfo),lrclink(lrclink),QWidget(parent),player(player),piclabel(0)
   ,piclabel2(0),timelabel(0),infolabel(0),ratelabel(0),lrclabel(0)
 {
+	QNetworkProxy proxy;
+	proxy.setType(QNetworkProxy::Socks5Proxy);
+	proxy.setHostName("127.0.0.1");
+	proxy.setPort(1080);
+	QNetworkProxy::setApplicationProxy(proxy);
     createwidgets();
+	this->curPlayModel = MODEL_NET;
 
 	curTime = QTime::currentTime();
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
@@ -74,6 +81,8 @@ void MusicWidget::updatePosition(qint64 position){
     timeinfo += nowtime;
     timeinfo += totaltime;
     timelabel->setText(timeinfo.join(tr("/")));
+	if (curPlayModel == MODEL_LAC) return;
+
     QVector <lrcItem>::iterator it = qLowerBound(lrctitle.begin(),lrctitle.end(),lrcItem(position,""));
 	QString text = (*it).text;
     if((*it).lrctime==position){
