@@ -41,11 +41,12 @@
 #include "playcontrols.h"
 #include "controlwindow.h"
 #include "musicwidget.h"
-#include "menuwidget.h"
 #include "playlistwindow.h"
 #include "playconfig.h"
 #include "subtitlelabel.h"
 #include "searchwindow.h"
+#include "aboutwidget.h"
+#include "propertywidget.h"
 
 
 class MainWindow : public QWidget
@@ -73,6 +74,18 @@ public:
 	void raiseSubtitleDelay(qint64 step);
 	void initPlaybackRate();
 	void loadLocalConfig();
+
+	//右键功能
+	void openFolder();
+	void changeScreen();
+	void showProperty();
+	void loadURLs();
+	void showAbout();
+	void quitMedia();
+	void playFile(const QString &);
+	void contextMenuEvent(QContextMenuEvent *event);
+	void setTheMenu();
+	QStringList getMediaList(QString path);
 public slots:
 	//播放列表
 	void itemDoubleClicked(QListWidgetItem *item);
@@ -99,7 +112,7 @@ public slots:
 	void mediaStatusChanged(QMediaPlayer::MediaStatus status);
 
 	//PlayWidget
-	void openMenu(QPoint pos);
+	
 
 	//主界面
 	void changeEvent(QEvent *event);
@@ -111,7 +124,6 @@ private:
 	PlayControls *controls;
 	ControlWindow *controlWindow;
 	SearchWindow *searchWindow;
-	MenuWidget *menuWidget;
 	SubtitleLabel *subLabel;
 	QSize wndSize;
 	PlayConfig *playConfig;
@@ -124,6 +136,20 @@ private:
 	int curPlayFlag;
 	QHBoxLayout *displayLayout, *controlLayout;
 	QVBoxLayout *layout;
+
+	//右键菜单
+	QMenu *pop_menu;
+	QAction *file_action;
+	QAction *folder_action;
+	QAction *word_action;
+	QAction *screen_action;
+	QAction *nature_action;
+	QAction *URLs_action;
+	QAction *about_action;
+	QAction *quit_action;
+
+	AboutWidget *about = new AboutWidget();
+	PropertyWidget *property = new PropertyWidget();
 };
 
 #endif // MAINWINDOW_H

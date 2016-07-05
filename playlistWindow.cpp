@@ -257,7 +257,7 @@ int PlaylistWindow::getMediaType(const QString fileName)
          QString suffixName = fileInfo.suffix().toLower();
         if (suffixName == "mp3" || suffixName == "flac" ||suffixName == "wmv") {
             return MEDIA_TYPE_MUSIC;
-        } else if(suffixName == "mp4" ||suffixName == "avi") {
+        } else if(suffixName == "mp4" ||suffixName == "avi" || suffixName == "mkv") {
             return MEDIA_TYPE_VIDEO;
         } else {
             return -1;

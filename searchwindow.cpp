@@ -4,9 +4,9 @@ SearchWindow::SearchWindow(QWidget *parent)
 : QWidget(parent)
 {
 	QNetworkProxy proxy;
-	proxy.setType(QNetworkProxy::HttpProxy);
-	proxy.setHostName("10.1.243.240");
-	proxy.setPort(8080);
+	proxy.setType(QNetworkProxy::Socks5Proxy);
+	proxy.setHostName("127.0.0.1");
+	proxy.setPort(1080);
 	QNetworkProxy::setApplicationProxy(proxy);
 
 	textEdit = new QTextEdit(this);

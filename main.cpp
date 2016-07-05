@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "playcontrols.h"
 #include "controlwindow.h"
-#include "menuwidget.h"
 #include "musicwidget.h"
 #include "subtitlelabel.h"
 #include "searchwindow.h"

@@ -16,33 +16,32 @@ TEMPLATE = app
 SOURCES += main.cpp\
     mainwindow.cpp \
     musicwidget.cpp \
-    menuwidget.cpp \
     playlistwindow.cpp \
     videowidget.cpp \
     playcontrols.cpp \
-    about_ui.cpp \
     subtitlelabel.cpp \
     searchwindow.cpp \
     controlwindow.cpp \
-    shortcut.cpp
+    shortcut.cpp \
+    propertywidget.cpp \
+    aboutwidget.cpp
 
 HEADERS  += mainwindow.h \
     musicwidget.h \
-    menuwidget.h \
     playlistwindow.h \
     videowidget.h \
     playcontrols.h \
-    about_ui.h \
     subtitlelabel.h \
     playconfig.h \
     searchwindow.h \
     controlwindow.h \
-    shortcut.h
+    shortcut.h \
+    propertywidget.h \
+    aboutwidget.h
 
 
 
 FORMS    += controlwindow.ui \
-    about_ui.ui \
     shortcut.ui
 
 RESOURCES += \

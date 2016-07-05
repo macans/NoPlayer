@@ -66,8 +66,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	controlWindow->hide();
 	//connect(controlWindow, SIGNAL())
 	
-	menuWidget = new MenuWidget;
-	menuWidget->hide();
 
 	searchWindow = new SearchWindow;
 	searchWindow->hide();
@@ -104,6 +102,34 @@ MainWindow::MainWindow(QWidget *parent) :
 	this->setMouseTracking(true);
 	this->resize(QSize(400, 320));
 
+	//初始化右键菜单
+	pop_menu = new QMenu();
+
+	file_action = new QAction(this);
+	folder_action = new QAction(this);
+	word_action = new QAction(this);
+	screen_action = new QAction(this);
+	nature_action = new QAction(this);
+	URLs_action = new QAction(this);
+	about_action = new QAction(this);
+	quit_action = new QAction(this);
+
+	//pop_menu->size
+
+	pop_menu->setStyleSheet("QMenu{background-color:rgb(234,234,234)}"
+		"QMenu::item{padding:3px 60px}"
+		"QMenu::item:selected{background-color:rgb(245,255,255)}");
+	setTheMenu();
+
+	//连接信号与槽
+	connect(file_action, &QAction::triggered, this, &MainWindow::openFile);
+	connect(folder_action, &QAction::triggered, this, &MainWindow::openFolder);
+	connect(screen_action, &QAction::triggered, this, &MainWindow::changeScreen);
+	connect(nature_action, &QAction::triggered, this, &MainWindow::showProperty);
+	connect(URLs_action, &QAction::triggered, this, &MainWindow::loadURLs);
+	connect(about_action, &QAction::triggered, this, &MainWindow::showAbout);
+	connect(quit_action, &QAction::triggered, this, &MainWindow::quitMedia);
+
 }
 
 MainWindow::~MainWindow()
@@ -115,6 +141,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
 {
+	if (event->button() == Qt::LeftButton || event->button() == Qt::RightButton)
+	{
+		about->close();
+		property->close();
+	}
     if(event->button() == Qt::RightButton){
 
     }
@@ -298,17 +329,6 @@ void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString 
 	connect(playWidget, SIGNAL(rightButtonClicked(QPoint)), this, SLOT(openMenu(QPoint)));
 }
 
-void MainWindow::openMenu(QPoint pos)
-{
-	if (menuState){
-		menuWidget->hide();
-		menuState = false;
-	}
-	else{
-		menuWidget->show();
-		menuState = true;
-	}
-}
  
 void MainWindow::searchButtonClicked()
 {
@@ -476,6 +496,98 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
+void MainWindow::contextMenuEvent(QContextMenuEvent *event)
+{
+	//清除原有菜单
+	pop_menu->clear();
+	pop_menu->addAction(file_action);
+	pop_menu->addAction(folder_action);
+	pop_menu->addAction(URLs_action);
+	pop_menu->addAction(screen_action);
+	pop_menu->addAction(nature_action);
+	pop_menu->addAction(about_action);
+	pop_menu->addAction(quit_action);
+	//菜单出现的位置为当前鼠标的位置
+	pop_menu->exec(QCursor::pos());
+	event->accept();
+}
+
+void MainWindow::setTheMenu()
+{
+	file_action->setText(tr("打开文件"));
+	folder_action->setText(tr("打开文件夹啊"));
+	//word_action->setIcon(QIcon(":/image/ic4.png"));
+	URLs_action->setText(tr("打开链接"));
+	nature_action->setText(tr("信息"));
+	screen_action->setText(tr("全屏"));
+	screen_action->setIcon(QIcon(":/image/ic6.png"));
+	about_action->setText(tr("关于"));
+	quit_action->setText(tr("结束"));
+}
+
+void MainWindow::playFile(const QString &filePath)
+{
+	//playButton->setEnabled(true);
+	player->setMedia(QUrl::fromLocalFile(filePath));
+	player->play();
+}
+//获取全部音频文件
+void MainWindow::openFolder()
+{
+	QString folderPath = QFileDialog::getExistingDirectory(this, tr("OpenDictory"));
+	if (folderPath.length() != 0)
+		getMediaList(folderPath);
+}
+
+QStringList MainWindow::getMediaList(QString path)
+{
+	QStringList fileList;
+	QDirIterator it(path, QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
+	while (it.hasNext())
+	{
+		QString mediaFile = it.next();
+		QStringList list = mediaFile.split('.');
+
+		QString last = list.takeLast(); // 文件后缀名
+		if ("mp3" == last || "mp4" == last || "mpg" == last || "flv" == last)
+			fileList << mediaFile;
+	}
+	return fileList;
+}
+
+
+//发送全屏信号
+void MainWindow::changeScreen()
+{
+	if (curPlayFlag == PLAY_VIDEO){
+		((QVideoWidget*)playWidget)->setFullScreen(playWidget->isFullScreen());
+	}
+}
+
+void MainWindow::showProperty()
+{
+	property->update();
+	property->show();
+	property->setGeometry(QCursor::pos().x(), QCursor::pos().y(), 220, 190);
+}
+
+void MainWindow::showAbout()
+{
+	about->update();
+	about->show();
+	about->setGeometry(QCursor::pos().x(), QCursor::pos().y(), 596, 443);
+}
+
+
+void MainWindow::quitMedia()
+{
+	exit(0);
+}
+
+void MainWindow::loadURLs()
+{
+
+}
 
 
 /*
