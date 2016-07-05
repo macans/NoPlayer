@@ -2,32 +2,47 @@
 
 PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidget(parent)
 {
+
     playlist = playList;
     listWidget = new QListWidget(this);
+    this->resize(QSize(250,400));
+
 //  QStringList tempList;
 //  tempList.append("F:/math/test.mp4");
 //  this->addItemFromLocal(tempList,true);
-//  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-//  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-//  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
 
 
 //----布局---------------------------------------
     QHBoxLayout *topLayout = new QHBoxLayout;
     topLayout->addWidget(listWidget);
     QHBoxLayout *bottomLayout = new QHBoxLayout;
-    playType = new QPushButton(QIcon(":image/ic6.png"),"");
+
+    playType = new QPushButton(QIcon(":image/seq.png"),"");
+    QSize iconSize = QSize(18,18);
     playType->setToolTip("点击切换播放模式");
+    playType->setStyleSheet("padding:0px;border:0px;");
+    playType->setIconSize(iconSize);
     search_edit = new QLineEdit();
 
-    search_btn = new QPushButton(QIcon(":image/ic7.png"),"");
+    search_btn = new QPushButton(QIcon(":image/search.ico"),"");
     search_btn->setToolTip("搜索");
-    addBtn = new QPushButton(QIcon(":image/ic4.png"),"");
+    search_btn->setStyleSheet("padding:0px;border:0px;");
+    search_btn->setIconSize(iconSize);
+    addBtn = new QPushButton(QIcon(":image/openfile.ico"),"");
     addBtn->setToolTip("添加");
-    delBtn = new QPushButton(QIcon(":image/ic8.png"),"");
+    addBtn->setStyleSheet("padding:0px;border:0px;");
+    addBtn->setIconSize(iconSize);
+    delBtn = new QPushButton(QIcon(":image/rmfile.ico"),"");
     delBtn->setToolTip("移除");
-    clearBtn = new QPushButton(QIcon(":image/ic9.png"),"");
+    delBtn->setStyleSheet("padding:0px;border:0px;");
+    delBtn->setIconSize(iconSize);
+    clearBtn = new QPushButton(QIcon(":image/clear.ico"),"");
     clearBtn->setToolTip("清空");
+    clearBtn->setStyleSheet("padding:0px;border:0px;");
+    clearBtn->setIconSize(iconSize);
     bottomLayout->addWidget(playType);
     bottomLayout->addWidget(search_edit);
     bottomLayout->addWidget(search_btn);
@@ -77,27 +92,31 @@ void PlaylistWindow::clear()
 //移除当前被选中的item
 void PlaylistWindow::removeItems()
 {
-    qDebug("rm前的:%d",playlist->currentIndex());
-    if(listWidget->count()>0 && listWidget->currentItem()!= NULL) {
+    if(listWidget->count()>0 && listWidget->currentItem()!= NULL &&  playlist->mediaCount()>0) {
         int listWidgetRow = listWidget->currentRow();
         int playlistRow = playlist->currentIndex();
+		if (playlistRow > listWidgetRow) {
+			playlist->setCurrentIndex(0);	
+		}
+		 listWidgetRow = listWidget->currentRow();
+		 playlistRow = playlist->currentIndex();
         if(listWidgetRow == playlistRow && listWidgetRow != 0) {
           playlist->setCurrentIndex(0);
-		  emit(playlist, SIGNAL(currentIndexChanged(int)));
         }
-        listWidget->takeItem(listWidgetRow);
-		if (playlist->removeMedia(listWidgetRow)) {
-			qDebug("rm成功");
-		}
-        
+		
+		playlist->removeMedia(listWidgetRow);
+		listWidget->takeItem(listWidgetRow);
         if(listWidgetRow == playlistRow && listWidgetRow == 0) {
-            playlist->setCurrentIndex(0);
-
+			if (playlist->mediaCount() > 0) {
+				playlist->setCurrentIndex(0);
+				this->setItemPlay(0);
+			}else {
+				playlist->setCurrentIndex(-1);
+			}
         }
-        qDebug("rm后的:%d",playlist->currentIndex());
-        //qDebug() <<listWidget->currentRow();
+		int row = playlist->currentIndex();
         this->updateIndex();
-        //listWidget->update();
+        listWidget->update();
     }
 
 }
@@ -150,9 +169,15 @@ void PlaylistWindow::setItemPlay(QListWidgetItem *item)
 //将行号为row的设置为播放项
 void PlaylistWindow::setItemPlay(int row)
 {
-    QListWidgetItem *item = listWidget->item(row);
-    this->setItemPlayView(item);
-    qDebug("setItemPlay %d",row);
+	if (playlist->currentIndex() != -1) {
+		QListWidgetItem *item = listWidget->item(row);
+		for (int i = 0; i < listWidget->count(); i++){
+			this->setItemNormalView(listWidget->item(i));
+		}
+		this->setItemPlayView(item);
+		//发送信号，进行播放
+		emit itemDoubleClicked(item);
+	}
 }
 
 //设置播放状态下的样式
@@ -184,22 +209,22 @@ void PlaylistWindow::setPlayMode()
     switch(playBackMode) {
     case CUR_ITEM_LOOP:
         playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
-        playType->setIcon(QIcon(":image/ic1.jpg"));
+        playType->setIcon(QIcon(":image/itemloop.ico"));
         playType->setToolTip("单曲循环");
         break;
     case SEQUENTIAL:
         playlist->setPlaybackMode(QMediaPlaylist::Sequential);
-        playType->setIcon(QIcon(":image/ic2.png"));
+        playType->setIcon(QIcon(":image/seq.png"));
         playType->setToolTip("顺序播放");
         break;
     case LOOP:
         playlist->setPlaybackMode(QMediaPlaylist::Loop);
-        playType->setIcon(QIcon(":image/ic3.png"));
+        playType->setIcon(QIcon(":image/listloop.ico"));
         playType->setToolTip("列表循环");
         break;
     case RANDOM:
         playlist->setPlaybackMode(QMediaPlaylist::Random);
-        playType->setIcon(QIcon(":image/ic4.png"));
+        playType->setIcon(QIcon(":image/random.ico"));
         playType->setToolTip("随机播放");
         break;
     default:
@@ -292,13 +317,21 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
             item->setText(index.append(item->text()));
             //设置item高度
             item->setSizeHint(QSize(100,30));
-            item->setIcon(QIcon(":/image/mp4.png"));
+           
             item->setToolTip(label);
             //设置media的类型
             int type = getMediaType(label);
             if(type != -1){
                 item->setStatusTip(QString::number(type,10));
+				if (type == MEDIA_TYPE_MUSIC) {
+                    item->setIcon(QIcon(":/image/music.gif"));
+				}
+				else if (type == MEDIA_TYPE_VIDEO) {
+                    item->setIcon(QIcon(":/image/video.ico"));
+				}
             }
+
+			
             this->setItemNormalView(item);
             //添加到playlist 并将第一条设置为当前播放item
             playlist->addMedia(QUrl::fromLocalFile(label));
@@ -334,7 +367,7 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
     item->setText(index.append(item->text()));
     //设置item高度
     item->setSizeHint(QSize(100,30));
-    item->setIcon(QIcon(":/image/mp4.png"));
+    item->setIcon(QIcon(":/image/net.ico"));
     item->setWhatsThis(QString::number(id,10));
     item->setToolTip(additem);
     //设置media的类型
