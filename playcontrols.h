@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QAbstractButton>
 #include <QToolButton>
+#include <QPushButton>
 #include <QStyle>
 #include <QSlider>
 #include <QLabel>

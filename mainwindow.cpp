@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	//player->setMedia(QUrl::fromLocalFile("E:\\test.mkv"));
 	
 	//播放视频
-	//playWidget = new VideoWidget(this);
+	playWidget = new VideoWidget(this);
 	//playWidget = new MusicWidget(this, player);
 	player->setVideoOutput((QVideoWidget*)playWidget);
 
@@ -51,10 +51,12 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	//controls->hide();
 	
-	subLabel = new SubtitleLabel(this, playConfig);
-	subLabel->subtitleChanged();
+    subLabel = new SubtitleLabel(this, playConfig);
+    subLabel->setStyleSheet("color:red;");
+    subLabel->subtitleChanged();
+    subLabel->setObjectName("subLabel");
 
-		controlWindow = new ControlWindow;
+	controlWindow = new ControlWindow;
 	//controlWindow;
 	connect(controlWindow, SIGNAL(controlWindowClosed()), this, SLOT(controlButtonClicked()));
 	connect(controlWindow, SIGNAL(fontChanged(QFont)), subLabel, SLOT(fontChanged(QFont)));
@@ -78,29 +80,22 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(player, SIGNAL(stateChanged(QMediaPlayer::State)), controls, SLOT(setState(QMediaPlayer::State)));
 	connect(player, SIGNAL(mutedChanged(bool)), controls, SLOT(setMuted(bool)));
 
-	//布局
-	displayLayout = new QHBoxLayout;
-	displayLayout->addWidget(playWidget);
+    //布局
+   //QGridLayout *grid=new QGridLayout();
 	playlistWindow->hide();
+	grid = NULL, 
+	controlLayout = subLabelLayout = displayLayout = NULL;
+	initLayout();
+	// this->setWindowFlags(Qt::FramelessWindowHint);
 
-	controlLayout = new QHBoxLayout;
-	controlLayout->addWidget(controls);
-	QHBoxLayout *subLayout = new QHBoxLayout;
-	subLayout->addWidget(subLabel);
-	//controlLayout->addStretch(1);
 
-	layout = new QVBoxLayout;
-	layout->setMargin(0);
-	layout->addLayout(displayLayout, 2);
-	layout->addLayout(subLayout);
-	layout->addLayout(controlLayout);
-	this->setLayout(layout);
+
 	this->mousePressed = false;
 	this->setWindowTitle("NoPlayer");
 	//this->setWindowIcon();
 	//this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
-	this->resize(QSize(400, 320));
+	this->resize(QSize(800, 640));
 
 	//初始化右键菜单
 	pop_menu = new QMenu();
@@ -185,7 +180,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 		this->show();
 	}
 	else{
-		this->setWindowFlags(Qt::FramelessWindowHint);
+				this->setWindowFlags(Qt::FramelessWindowHint);
+
 	}*/
 }
 
@@ -260,7 +256,7 @@ void MainWindow::openFile()
 	}
 	//添加播放列表
 	int flag = playlistWindow->addItemFromLocal(fileNames);
-	initPlayWidget(flag, MODEL_LAC);
+	//initPlayWidget(flag, MODEL_LAC);
 	player->play();
 }
 
@@ -327,7 +323,7 @@ void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString 
 		}
 	}
 	player->play();
-	displayLayout->addWidget(playWidget);
+	initLayout();
 	connect(controlWindow, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
 	connect(controlWindow, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
 	connect(controlWindow, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
@@ -595,6 +591,33 @@ void MainWindow::quitMedia()
 void MainWindow::loadURLs()
 {
 
+}
+
+void MainWindow::initLayout()
+{
+	delete controlLayout;
+	delete subLabelLayout;
+	delete displayLayout;
+	delete grid;
+	
+	grid = new QGridLayout;
+	displayLayout = new QHBoxLayout;
+	displayLayout->addWidget(playWidget);
+
+	controlLayout = new QHBoxLayout;
+	controlLayout->addWidget(controls);
+	subLabelLayout = new QHBoxLayout;
+	subLabelLayout->addWidget(subLabel);
+	//controlLayout->addStretch(1);
+	grid->addLayout(displayLayout, 0, 0, 100, 100);
+	grid->addLayout(subLabelLayout, 78, 19, 5, 60);
+	grid->addLayout(controlLayout, 79, 19, 20, 60);
+	/*QBoxLayout *layout = new QVBoxLayout;
+	layout->setMargin(0);
+	layout->addLayout(displayLayout, 2);
+	layout->addLayout(controlLayout);*/
+	grid->setMargin(0);
+	this->setLayout(grid);
 }
 
 

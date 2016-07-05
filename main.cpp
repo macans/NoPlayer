@@ -24,7 +24,14 @@ int main(int argc, char *argv[])
 	QTextCodec::setCodecForLocale(codec);
 	//ControWindow w;
     w.show();
-
+	/*QString qss;
+    QFile qssFile(":/default2.qss");
+	qssFile.open(QFile::ReadOnly);
+	if (qssFile.isOpen()){
+		qss = QLatin1String(qssFile.readAll());
+		qApp->setStyleSheet(qss);
+		qssFile.close();
+	}*/
    /* 
    QMediaPlayer *musicplayer = new QMediaPlayer;
     //musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\238976206.mp3"));

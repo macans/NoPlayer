@@ -3,46 +3,54 @@
 PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 {
 	playerMuted = 0;
-	playButton = new QToolButton(this);
-	playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-	connect(playButton, SIGNAL(clicked()), this, SLOT(playClicked()));
+    playButton = new QPushButton(this);
+     playButton->setObjectName("playButton");
+    //playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    connect(playButton, SIGNAL(clicked()), this, SLOT(playClicked()));
 
-	stopButton = new QToolButton(this);
-	stopButton->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
-	stopButton->setEnabled(false);
-	connect(stopButton, SIGNAL(clicked()), this, SIGNAL(stop()));
+    stopButton = new QPushButton(this);
+    stopButton->setObjectName("stopButton");
+    //stopButton->setIcon(style()->standardIcon(QStyle::SP_MediaStop));
+    stopButton->setEnabled(false);
+    connect(stopButton, SIGNAL(clicked()), this, SIGNAL(stop()));
 
-	nextButton = new QToolButton(this);
-	nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
-	connect(nextButton, SIGNAL(clicked()), this, SIGNAL(next()));
+    nextButton = new QPushButton(this);
+    nextButton->setObjectName("nextButton");
+    //nextButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipForward));
+    connect(nextButton, SIGNAL(clicked()), this, SIGNAL(next()));
 
-	previousButton = new QToolButton(this);
-	previousButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
-	connect(previousButton, SIGNAL(clicked()), this, SIGNAL(previous()));
-	
-	openButton = new QToolButton(this);
-	openButton->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
-	connect(openButton, SIGNAL(clicked()), this, SIGNAL(open()));
+    previousButton = new QPushButton(this);
+    previousButton->setObjectName("previousButton");
+    //previousButton->setIcon(style()->standardIcon(QStyle::SP_MediaSkipBackward));
+    connect(previousButton, SIGNAL(clicked()), this, SIGNAL(previous()));
 
+    openButton = new QPushButton(this);
+    openButton->setObjectName("openButton");
+    //openButton->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
+    connect(openButton, SIGNAL(clicked()), this, SIGNAL(open()));
 
-	muteButton = new QToolButton(this);
-	muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-	connect(muteButton, SIGNAL(clicked()), this, SLOT(muteClicked()));
+    muteButton = new QPushButton(this);
+    muteButton->setObjectName("muteButton");
+    //muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
+    connect(muteButton, SIGNAL(clicked()), this, SLOT(muteClicked()));
 
-	volumeSlider = new QSlider(Qt::Horizontal, this);
-	volumeSlider->setRange(0, 100);
-	connect(volumeSlider, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
+    volumeSlider = new QSlider(Qt::Horizontal, this);
+    volumeSlider->setRange(0, 100);
+    connect(volumeSlider, SIGNAL(valueChanged(int)), this, SIGNAL(changeVolume(int)));
 
-	searchButton = new QToolButton(this);
-	connect(searchButton, SIGNAL(clicked()), this, SIGNAL(searchButtonClicked()));
+    searchButton = new QPushButton(this);
+      searchButton->setObjectName("searchButton");
+    connect(searchButton, SIGNAL(clicked()), this, SIGNAL(searchButtonClicked()));
 
-	playlistButton = new QToolButton(this);
-	playlistButton->setWindowIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
-	connect(playlistButton, SIGNAL(clicked()), this, SIGNAL(playlistButtonClicked()));
-	
-	controlButton = new QToolButton(this);
-	controlButton->setWindowIcon(style()->standardIcon(QStyle::SP_DialogOkButton));
-	connect(controlButton, SIGNAL(clicked()), this, SIGNAL(controlButtonClicked()));
+    playlistButton = new QPushButton(this);
+    playlistButton->setObjectName("playlistButton");
+    //playlistButton->setWindowIcon(style()->standardIcon(QStyle::SP_ComputerIcon));
+    connect(playlistButton, SIGNAL(clicked()), this, SIGNAL(playlistButtonClicked()));
+
+    controlButton = new QPushButton(this);
+    controlButton->setObjectName(tr("controlButton"));
+    //controlButton->setWindowIcon(style()->standardIcon(QStyle::SP_DialogOkButton));
+    connect(controlButton, SIGNAL(clicked()), this, SIGNAL(controlButtonClicked()));
 
 	slider = new QSlider(Qt::Horizontal, this);
 	connect(slider, SIGNAL(sliderMoved(int)), this, SIGNAL(seek(int)));

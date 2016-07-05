@@ -29,6 +29,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QBoxLayout>
+#include <QGridLayout>
 #include <QAbstractItemView>
 #include <QListView>
 #include <QFileDialog>
@@ -74,6 +75,7 @@ public:
 	void raiseSubtitleDelay(qint64 step);
 	void initPlaybackRate();
 	void loadLocalConfig();
+	void initLayout();
 
 	//ÓÒ¼ü¹¦ÄÜ
 	void openFolder();
@@ -135,8 +137,8 @@ private:
 	bool menuState;
 	int curPlayFlag;
 	QStringList typeAllowed;
-	QHBoxLayout *displayLayout, *controlLayout;
-	QVBoxLayout *layout;
+	QHBoxLayout *displayLayout, *controlLayout, *subLabelLayout;
+    QGridLayout *grid;
 
 	//ÓÒ¼ü²Ëµ¥
 	QMenu *pop_menu;
