@@ -249,15 +249,23 @@ void MainWindow::seek(int seconds)
 void MainWindow::loadLocalConfig()
 {
 	//加载本地设置
+	QFile *configFile = new QFile("config.ini");
+	if (!configFile->open(QIODevice::ReadWrite | QIODevice::Text)){
+		qDebug() << "config file open failed" << endl;
+	}
+	QString config = configFile->readAll();
+	QScriptEngine engine;
+	QScriptValue val = engine.evaluate("value=" + config);
+	qDebug() << val.toString();
 	playConfig = new PlayConfig;
-	playConfig->secForword = 5000;
-	playConfig->secRewind = 5000;
+	playConfig->secForword = val.property("msec_forword").toInt32();
+	playConfig->secRewind = val.property("msec_rewind").toInt32();
 	playConfig->rate = 1;
 	playConfig->subDelay = 0;
 	playConfig->hue = 50;
 	playConfig->brightness = 50;
 	playConfig->contrast = 50;
-	playConfig->stopWhenMin = 1;
+	playConfig->stopWhenMin = val.property("stop_while_min").toInt32();
 }
 
 void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString lrclink)

@@ -61,7 +61,7 @@ public:
 	void mousePressEvent(QMouseEvent *event);
 	void mouseReleaseEvent(QMouseEvent *event);
 	void keyPressEvent(QKeyEvent *event);
-	void loadLocalConfig();
+	
 	//自定义函数
     void updateWindowSize();
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
@@ -72,6 +72,7 @@ public:
 	void raisePlaybackRate(qreal step);
 	void raiseSubtitleDelay(qint64 step);
 	void initPlaybackRate();
+	void loadLocalConfig();
 public slots:
 	//播放列表
 	void itemDoubleClicked(QListWidgetItem *item);
