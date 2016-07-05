@@ -46,7 +46,7 @@ public slots:
     void removeItems();
     void searchItem();
     void clearSearch();
-    void setItemPlay(QListWidgetItem* item);
+	void setItemPlay(QListWidgetItem* item, bool isLocal = true);
     void setItemPlay(int row);
     void setItemPlayView(QListWidgetItem* item);
     void setItemNormalView(QListWidgetItem* item);

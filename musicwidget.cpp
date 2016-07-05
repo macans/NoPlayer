@@ -20,9 +20,9 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
   ,piclabel2(0),timelabel(0),infolabel(0),ratelabel(0),lrclabel(0)
 {
 	QNetworkProxy proxy;
-	proxy.setType(QNetworkProxy::Socks5Proxy);
-	proxy.setHostName("127.0.0.1");
-	proxy.setPort(1080);
+	proxy.setType(QNetworkProxy::HttpProxy);
+	proxy.setHostName("10.1.243.240");
+	proxy.setPort(8080);
 	QNetworkProxy::setApplicationProxy(proxy);
     createwidgets();
 	this->curPlayModel = MODEL_NET;
