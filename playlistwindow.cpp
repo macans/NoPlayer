@@ -1,4 +1,4 @@
-#include "playlistwindow.h"
+﻿#include "playlistwindow.h"
 
 PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidget(parent)
 {
@@ -10,9 +10,9 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
 //  QStringList tempList;
 //  tempList.append("F:/math/test.mp4");
 //  this->addItemFromLocal(tempList,true);
-  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+  //this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+  //this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+ // this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
 
 
 //----布局---------------------------------------
@@ -53,6 +53,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     mainLayout->addLayout(topLayout);
     mainLayout->addLayout(bottomLayout);
     this->setLayout(mainLayout);
+    loadPlaylist();
 
 //-----signal-start------------
     connect(listWidget,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)));
@@ -74,6 +75,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
 
     connect(playlist,SIGNAL(currentIndexChanged(int)),this,SLOT(setItemPlay(int)));
     connect(playType,SIGNAL(clicked(bool)),this,SLOT(setPlayMode()));
+    connect(playType,SIGNAL(clicked(bool)),this,SLOT(savePlaylist()));
     connect(addBtn,SIGNAL(clicked(bool)),this,SLOT(openfiles()));
 //------signal-end------------
 
@@ -380,4 +382,66 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
     //qDebug("%d",playlist->currentIndex());
     return MEDIA_TYPE_MUSIC;
 
+}
+
+void PlaylistWindow::loadPlaylist()
+{
+    //加载本地设置
+        QFile *playlistFile = new QFile("playlist.txt");
+        if (!playlistFile->open(QIODevice::ReadWrite | QIODevice::Text)){
+            qDebug() << "config file open failed" << endl;
+		}
+		else {
+			QString playlistStr = playlistFile->readAll();
+			QScriptEngine engine;
+			QScriptValue val = engine.evaluate("value=" + playlistStr);
+			QScriptValueIterator it(val.property("playlist"));
+
+			QStringList locallist;
+			while (it.hasNext())
+			{
+				it.next();
+				if (it.value().property("is_local").toString() == "1")
+				{
+					qDebug() << "name :" << it.value().property("name").toString();
+					locallist.append(it.value().property("name").toString());
+				}
+				else if (it.value().property("is_local").toString() == "0") {
+					addItemFromNet(it.value().property("name").toString(), it.value().property("link").toString(), it.value().property("id").toInt32());
+				}
+			}
+			addItemFromLocal(locallist,false);
+		}
+}
+
+void PlaylistWindow::savePlaylist()
+{
+    //保存配置
+        QFile *playlistFile = new QFile("playlist.txt");
+        if (!playlistFile->open(QIODevice::WriteOnly | QIODevice::Text)){
+            qDebug() << "save playlist file failed" << endl;
+        }
+        QString playlistStr="{\nplaylist:\n[\n";
+        for(int i=0;i<listWidget->count();i++) {
+            QString listitem = "{\n";
+            QListWidgetItem *item = listWidget->item(i);
+            if(item->whatsThis() == "") {
+                //local file
+                listitem += "\"is_local\":\"1\",\n";
+                listitem += "\"name\":\""+QString(item->toolTip())+"\"\n";
+
+            } else {
+                listitem += "\"is_local\": \"0\",\n";
+                listitem += "\"name\":\""+QString(item->toolTip()) +"\",\n";
+                listitem += "\"link\":\""+QString(playlist->media(i).canonicalUrl().toString()) +"\",\n";
+                listitem += "\"id\":\""+QString(item->whatsThis()) +"\"\n";
+            }
+            listitem += "},\n";
+            playlistStr += listitem;
+        }
+
+        playlistStr += "]\n}";
+
+        playlistFile->write(playlistStr.toLocal8Bit());
+        playlistFile->close();
 }

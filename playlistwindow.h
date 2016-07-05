@@ -12,6 +12,8 @@
 #include <QMediaPlaylist>
 #include <QFileInfo>
 #include <QFileDialog>
+#include <QScriptEngine>
+#include <QScriptValueIterator>
 #define ITEM_COLOR_NORMAL "#f68"
 #define ITEM_COLOR_PLAY "#129"
 #define ITEM_COLOR_SEARCH "#19c"
@@ -55,6 +57,7 @@ public slots:
     void next();
     void previous();
     void openfiles();
+    void savePlaylist();
 private:
     QListWidget *listWidget;
     QLineEdit *search_edit;
@@ -76,6 +79,8 @@ private:
 public:
     int addItemFromLocal(const QStringList &addList,bool playNow = true);
     int addItemFromNet(const QString &additem,const QString &link,int id);
+
+    void loadPlaylist();
 
 
 };
