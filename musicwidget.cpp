@@ -1,4 +1,5 @@
 #include "musicwidget.h"
+
 #include <QDebug>
 #include <QTime>
 #include <QtWidgets>

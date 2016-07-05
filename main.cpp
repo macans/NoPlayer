@@ -11,9 +11,10 @@
 #include <QMediaPlaylist>
 #include <QNetworkReply>
 
+
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication a(argc, argv); 
     //QMediaPlayer *musicplayer = new QMediaPlayer;
     //musicplayer->setMedia(QUrl::fromLocalFile("E:\\QTproject\\music.mp3"));
     //MusicWidget w(0,musicplayer);

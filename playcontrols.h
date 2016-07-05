@@ -21,7 +21,6 @@ public:
 	
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
 signals :
-
 	void play();
 	void pause();
 	void stop();
@@ -48,7 +47,6 @@ public slots:
 private slots:
 	void playClicked();
 	void muteClicked();
-	
 	void  mousePressEvent(QMouseEvent *event);
 
 

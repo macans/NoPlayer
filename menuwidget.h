@@ -6,7 +6,6 @@
 #include <QToolButton>
 #include <QMouseEvent>
 
-
 class MenuWidget : public QWidget
 {
     Q_OBJECT
@@ -42,7 +41,6 @@ private:
     QToolButton *butt7;
     QToolButton *butt8;
     QToolButton *butt9;
-
 };
 
 #endif // MENUWIDGET_H

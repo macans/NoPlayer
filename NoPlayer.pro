@@ -4,8 +4,8 @@
 #
 #-------------------------------------------------
 
-
 QT       += core gui multimedia multimediawidgets network script widgets
+
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,7 +26,6 @@ SOURCES += main.cpp\
     controlwindow.cpp \
     shortcut.cpp
 
-
 HEADERS  += mainwindow.h \
     musicwidget.h \
     menuwidget.h \
@@ -46,6 +45,6 @@ FORMS    += controlwindow.ui \
     about_ui.ui \
     shortcut.ui
 
-
 RESOURCES += \
     images.qrc
+

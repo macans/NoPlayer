@@ -2,7 +2,6 @@
 
 VideoWidget::VideoWidget(QWidget *parent) : QVideoWidget(parent)
 {
-	
 	QPixmap pixmap(":/image/logo.png");
 	QPalette palette;
 	palette.setBrush(this->backgroundRole(), QBrush(pixmap));	
@@ -14,6 +13,7 @@ VideoWidget::VideoWidget(QWidget *parent) : QVideoWidget(parent)
 
 void VideoWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
+
 	if (event->button() == Qt::RightButton) return;
 	setFullScreen(!isFullScreen());
 	event->accept();

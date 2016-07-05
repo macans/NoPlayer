@@ -11,6 +11,7 @@
 #include  <QLineEdit>
 #include <QMediaPlaylist>
 #include <QFileInfo>
+#include <QFileDialog>
 #define ITEM_COLOR_NORMAL "#f68"
 #define ITEM_COLOR_PLAY "#129"
 #define ITEM_COLOR_SEARCH "#19c"
@@ -45,7 +46,7 @@ public slots:
     void removeItems();
     void searchItem();
     void clearSearch();
-    void setItemPlay(QListWidgetItem* item, bool isLocal = false);
+    void setItemPlay(QListWidgetItem* item);
     void setItemPlay(int row);
     void setItemPlayView(QListWidgetItem* item);
     void setItemNormalView(QListWidgetItem* item);
@@ -53,6 +54,7 @@ public slots:
     void setPlayMode();
     void next();
     void previous();
+    void openfiles();
 private:
     QListWidget *listWidget;
     QLineEdit *search_edit;

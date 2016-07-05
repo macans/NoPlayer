@@ -24,6 +24,7 @@ PlayControls::PlayControls(QWidget *parent) :QWidget(parent)
 	openButton->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon));
 	connect(openButton, SIGNAL(clicked()), this, SIGNAL(open()));
 
+
 	muteButton = new QToolButton(this);
 	muteButton->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
 	connect(muteButton, SIGNAL(clicked()), this, SLOT(muteClicked()));

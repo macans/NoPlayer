@@ -97,20 +97,20 @@ MainWindow::MainWindow(QWidget *parent) :
 	layout->addLayout(subLayout);
 	layout->addLayout(controlLayout);
 	this->setLayout(layout);
-
-
 	this->mousePressed = false;
 	this->setWindowTitle("NoPlayer");
 	//this->setWindowIcon();
 	//this->setWindowFlags(Qt::FramelessWindowHint);
 	this->setMouseTracking(true);
 	this->resize(QSize(400, 320));
+
 }
 
 MainWindow::~MainWindow()
 {
 	savePlayConfig();
 	savePlayList();
+
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
