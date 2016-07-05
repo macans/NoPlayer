@@ -1,0 +1,18 @@
+
+loadPlaylist()
+savePlaylist()
+
+FILE file = open;
+str = file.readAll();
+QScriptEngine engine;
+QScriptValue val = engine.evaluate("value=" + str);
+int x = val.proerty(0).property("is_local").toInt32();
+
+[
+	{
+		"is_local": 1,
+		"name":	"E:/test.mkv" | "Beyond - SOME",
+		"link": "" | "web addr",
+		"id":	"" | 123455,
+	}
+]

@@ -85,7 +85,7 @@ public:
 	void playFile(const QString &);
 	void contextMenuEvent(QContextMenuEvent *event);
 	void setTheMenu();
-	QStringList getMediaList(QString path);
+	void getMediaList(QString path);
 public slots:
 	//≤•∑≈¡–±Ì
 	void itemDoubleClicked(QListWidgetItem *item);
@@ -134,6 +134,7 @@ private:
 	bool controlState;
 	bool menuState;
 	int curPlayFlag;
+	QStringList typeAllowed;
 	QHBoxLayout *displayLayout, *controlLayout;
 	QVBoxLayout *layout;
 

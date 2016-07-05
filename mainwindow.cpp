@@ -3,7 +3,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent)
 {
-
+	typeAllowed << "mp3" << "mp4" << "mkv" << "flv" << "flac" << "mpg";
 	searchState = false;
 	playlistState = false;
 	mousePressed = false;
@@ -147,7 +147,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 		property->close();
 	}
     if(event->button() == Qt::RightButton){
-
+		QRect 
     }
 	if (event->button() == Qt::LeftButton){
 		this->mousePressed = true;
@@ -173,13 +173,15 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
 	const QPoint &pos = event->pos();
-	const QRect &rect = this->geometry();
+	const QRect &rect = controls->geometry();
+	
+	/*if (this->mousePressed){
+		this->move(this->pos() + (event->globalPos() - event->pos()));
+	}*/
 
-	if (this->mousePressed){
-		//this->move(this->pos() + (event->globalPos() - event->pos()));
-	}
+
 	/*if (isPosInRect(pos, rect)){
-		this->setWindowFlags(Qt::Window);
+		controls->show();
 		this->show();
 	}
 	else{
@@ -205,12 +207,12 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 
 void MainWindow::nextClicked()
 {
-	playList->next();
+	playlistWindow->next();
 }
 
 void MainWindow::previousClicked()
 {
-	playList->previous();
+	playlistWindow->previous();
 }
 
 //传过来的是步进的毫秒数
@@ -253,6 +255,9 @@ void MainWindow::playlistButtonClicked()
 void MainWindow::openFile()
 {
 	QStringList fileNames = QFileDialog::getOpenFileNames(this, tr("Open Files"));
+	if (fileNames.count() == 0){
+		return;
+	}
 	//添加播放列表
 	int flag = playlistWindow->addItemFromLocal(fileNames);
 	initPlayWidget(flag, MODEL_LAC);
@@ -390,6 +395,7 @@ void MainWindow::savePlayConfig()
 void MainWindow::savePlayList()
 {
 	//保存播放列表
+
 }
 
 void MainWindow::itemDoubleClicked(QListWidgetItem *item)
@@ -539,20 +545,22 @@ void MainWindow::openFolder()
 		getMediaList(folderPath);
 }
 
-QStringList MainWindow::getMediaList(QString path)
+void MainWindow::getMediaList(QString path)
 {
 	QStringList fileList;
-	QDirIterator it(path, QDir::Files | QDir::NoSymLinks, QDirIterator::Subdirectories);
+	QDirIterator it(path, QDir::Files | QDir::NoSymLinks, QDirIterator::NoIteratorFlags);
 	while (it.hasNext())
 	{
 		QString mediaFile = it.next();
 		QStringList list = mediaFile.split('.');
 
 		QString last = list.takeLast(); // 文件后缀名
-		if ("mp3" == last || "mp4" == last || "mpg" == last || "flv" == last)
+		if (typeAllowed.indexOf(last) != -1)
 			fileList << mediaFile;
 	}
-	return fileList;
+	int flag = playlistWindow->addItemFromLocal(fileList);
+	initPlayWidget(flag, MODEL_LAC);
+	player->play();
 }
 
 

@@ -45,9 +45,9 @@ public slots:
     void clear();
     void removeItems();
     void searchItem();
-    void clearSearch();
-	void setItemPlay(QListWidgetItem* item, bool isLocal = true);
+	void clearSearch();
     void setItemPlay(int row);
+	void setPlaylistIndex(QListWidgetItem *item);
     void setItemPlayView(QListWidgetItem* item);
     void setItemNormalView(QListWidgetItem* item);
     void setItemSearchView(QListWidgetItem* item);
@@ -67,6 +67,8 @@ private:
     bool search_flag = false;
     QMediaPlaylist *playlist;
     int playBackMode = SEQUENTIAL;
+
+	bool indexChangeAllowed;
 
 
 private:
