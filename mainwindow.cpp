@@ -89,13 +89,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	// this->setWindowFlags(Qt::FramelessWindowHint);
 
 
-
+	this->setMouseTracking(true);
 	this->mousePressed = false;
 	this->setWindowTitle("NoPlayer");
-	//this->setWindowIcon();
-	//this->setWindowFlags(Qt::FramelessWindowHint);
-	this->setMouseTracking(true);
-	this->resize(QSize(800, 640));
+	
+	this->resize(QSize(596, 443));
 
 	//初始化右键菜单
 	pop_menu = new QMenu();
@@ -168,21 +166,18 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
 	const QPoint &pos = event->pos();
-	const QRect &rect = controls->geometry();
 	
 	/*if (this->mousePressed){
 		this->move(this->pos() + (event->globalPos() - event->pos()));
 	}*/
 
-
-	/*if (isPosInRect(pos, rect)){
+	const QRect &controlRect = controls->geometry();
+	if (isPosInRect(pos, controlRect)){
 		controls->show();
-		this->show();
 	}
 	else{
-				this->setWindowFlags(Qt::FramelessWindowHint);
-
-	}*/
+		controls->hide();
+	}
 }
 
 bool MainWindow::isPosInRect(const QPoint &pos, const QRect &rect)
