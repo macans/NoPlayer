@@ -10,4 +10,6 @@ debug/*
 x64/
 *.mp4
 *.srt
+._*
+.DS_Store
 

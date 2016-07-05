@@ -31,7 +31,11 @@ QWidget(parent)
     QGridLayout *grid1 = new QGridLayout();
     QLabel *Lmini_pause = new QLabel("Stop");
     QLabel *Lsize = new QLabel("Size while open");
-    QPushButton *Lshortcut_key = new QPushButton("View shorcut");
+    QPushButton *Lshortcut_key = new QPushButton("查看快捷键");
+
+    Lshortcut_key->setObjectName("Lshortcut_key");
+    Lshortcut_key->resize(20,20);
+
     QRadioButton *Cmini_pause=new QRadioButton();
     QComboBox *Csize=new QComboBox();
     //QIcon icon5(":/image/sound.png");
@@ -81,8 +85,11 @@ QWidget(parent)
 	//QLabel *colorshow=new QLabel();
 	//QLabel *fontshow=new QLabel("字体(font)");
 	QPushButton *morecolor = new QPushButton("更多颜色");
+       morecolor->setObjectName("morec");
 	QPushButton *morefont = new QPushButton("更多字体");
+       morefont->setObjectName("moref");
 	QPushButton *morezimu = new QPushButton("更多字幕");
+       morezimu->setObjectName("mores");
 	grid2->addWidget(color, 0, 0);
 	grid2->addWidget(colorshow, 0, 1);
 	grid2->addWidget(morecolor, 0, 2);
@@ -117,23 +124,30 @@ QWidget(parent)
 	QWidget *widget4 = new QWidget();
 	QLabel *seek = new QLabel("搜索");
     QPushButton *seekbeforemi = new QPushButton("<<");
+       seekbeforemi->setObjectName("seekbeforemi");
     QPushButton *seekbeforesec = new QPushButton("<");
+    seekbeforesec->setObjectName("seekbeforesec");
     QPushButton *seekaftermi = new QPushButton(">");
+    seekaftermi->setObjectName("seekaftermi");
     QPushButton *seekaftersec = new QPushButton(">>");
+     seekaftersec->setObjectName("seekaftersec");
 	QLabel *speed = new QLabel("播放速度");
 	QPushButton *slow = new QPushButton("减慢");
+    slow->setObjectName("slow");
 	QPushButton *speedup = new QPushButton("加快");
+    speedup->setObjectName("speedup");
 	QPushButton *defaults = new QPushButton("默认");
+    defaults->setObjectName("defaults");
 
 	grid4->addWidget(seek, 0, 0);
-	grid4->addWidget(seekbeforemi, 0, 1);
-	grid4->addWidget(seekbeforesec, 0, 2);
-	grid4->addWidget(seekaftermi, 0, 3);
-	grid4->addWidget(seekaftersec, 0, 4);
+    grid4->addWidget(seekbeforemi, 0, 1,1,2);
+    grid4->addWidget(seekbeforesec, 0, 3,1,2);
+    grid4->addWidget(seekaftermi, 0, 5,1,2);
+    grid4->addWidget(seekaftersec, 0, 7,1,2);
 	grid4->addWidget(speed, 1, 0);
-	grid4->addWidget(slow, 1, 1);
-	grid4->addWidget(speedup, 1, 2);
-	grid4->addWidget(defaults, 1, 3);
+    grid4->addWidget(slow, 1, 2,1,2);
+    grid4->addWidget(speedup, 1, 4,1,2);
+    grid4->addWidget(defaults, 1, 6,1,2);
 	widget4->setLayout(grid4);
 
 
@@ -216,17 +230,19 @@ void ControlWindow::colorshowFUN()
 
 }
 
-void ControlWindow::fontshowFUN(){
-	bool ok;
-	QFont  font = QFontDialog::getFont(&ok);
-	if (ok){
-        QString fontname=font.family();
-		fontshow->setFont(font);
-        emit fontChanged(font);
-	}
-	else {
 
-	}
+void ControlWindow::fontshowFUN(){
+    bool ok;
+    QFont  font = QFontDialog::getFont(&ok);
+    if (ok){
+        QString fontname=font.family();
+        //fontshow->setFont(font);
+        fontshow->setText(fontname);
+        emit fontChanged(font);
+    }
+    else {
+
+    }
 }
 
 void ControlWindow::zimushowFUN()
