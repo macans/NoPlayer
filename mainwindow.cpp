@@ -147,7 +147,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 		property->close();
 	}
     if(event->button() == Qt::RightButton){
-		QRect 
+		//QRect 
     }
 	if (event->button() == Qt::LeftButton){
 		this->mousePressed = true;
@@ -331,7 +331,6 @@ void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString 
 	connect(controlWindow, SIGNAL(changeBrightness(int)), playWidget, SLOT(setBrightness(int)));
 	connect(controlWindow, SIGNAL(changeHue(int)), playWidget, SLOT(setHue(int)));
 	connect(controlWindow, SIGNAL(changeContrast(int)), playWidget, SLOT(setContrast(int)));
-	connect(playWidget, SIGNAL(rightButtonClicked(QPoint)), this, SLOT(openMenu(QPoint)));
 }
 
  
@@ -404,6 +403,7 @@ void MainWindow::itemDoubleClicked(QListWidgetItem *item)
 	QString idStr = item->whatsThis();
 	if (idStr == ""){
 		initPlayWidget(flag, MODEL_LAC);
+		player->play();
 	}
 	else{
 		searchWindow->getSongInfo(idStr, false);

@@ -328,7 +328,8 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
                 mediaType = type;
                 if(playNow){
 					this->indexChangeAllowed = true;
-                    this->setItemPlay(row);
+                    //this->setItemPlay(row);
+					playlist->setCurrentIndex(row);
 					this->indexChangeAllowed = false;
 
                 }else{
@@ -370,7 +371,8 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
     //添加到playlist 并将第一条设置为当前播放item
     playlist->addMedia(QUrl(link));
 	this->indexChangeAllowed = true;
-	this->setItemPlay(row);
+//	this->setItemPlay(row);
+	playlist->setCurrentIndex(row);
 	this->indexChangeAllowed = false;
     //qDebug("%d",playlist->currentIndex());
     return MEDIA_TYPE_MUSIC;
@@ -381,6 +383,7 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
 void PlaylistWindow::setPlaylistIndex(QListWidgetItem *item)
 {
 	int origin = playlist->currentIndex();
+	int cnt = playlist->mediaCount();
 	//setItemNormalView(listWidget->item(origin));
 	int row = listWidget->row(item);
 	playlist->setCurrentIndex(row);

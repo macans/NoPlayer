@@ -10,10 +10,10 @@ MusicWidget::MusicWidget(QWidget *parent,QMediaPlayer *player) : QWidget(parent)
 {
     createwidgets();
 	this->curPlayModel = MODEL_LAC;
-    player->play();
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
     connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateInfo()));
+	player->play();
 }
 
 MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QMediaPlayer *player):musicinfo(musicinfo),lrclink(lrclink),QWidget(parent),player(player),piclabel(0)
