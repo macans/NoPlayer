@@ -31,6 +31,7 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
     connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateNetinfo()));
+    showNetimg();
     getlrc();
 	qDebug() << curTime.toString();
 	player->play();
@@ -116,27 +117,6 @@ void MusicWidget::updateNetinfo(){
     QString srate =  QString(tr("44kHz"));
     info2 += srate;
     ratelabel->setText(info2.join(tr("|")));
-    //解析musicinfo，获取专辑图片
-    QScriptEngine engine;
-    QScriptValue sc =  engine.evaluate("value=" + musicinfo);
-    qDebug()<<sc.property("data").property("songList").isArray()<<endl;
-    QScriptValueIterator songlist(sc.property("data").property("songList"));
-    songlist.next();
-    QString imglink = songlist.value().property("songPicRadio").toString();
-    qDebug()<<"jpg:"<<imglink<<endl;
-    QNetworkAccessManager manager;
-    QEventLoop loop;
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(imglink)));
-    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-    QByteArray jpgData = reply->readAll();
-    QPixmap pixmap,pixmap2;
-    pixmap.loadFromData(jpgData);
-    pixmap2=pixmap.scaled(70,70,Qt::KeepAspectRatio);
-    if(!pixmap.isNull()){
-        piclabel->setPixmap(pixmap);
-        piclabel2->setPixmap(pixmap2);
-    }
 }
 
 void MusicWidget::createwidgets(){
@@ -216,5 +196,29 @@ void MusicWidget::getlrc(){
             pos += rx.matchedLength();
             pos = rx.indexIn(oneline, pos);//匹配全部
         }
+    }
+}
+
+void MusicWidget::showNetimg(){
+    //解析musicinfo，获取专辑图片
+    QScriptEngine engine;
+    QScriptValue sc =  engine.evaluate("value=" + musicinfo);
+    qDebug()<<sc.property("data").property("songList").isArray()<<endl;
+    QScriptValueIterator songlist(sc.property("data").property("songList"));
+    songlist.next();
+    QString imglink = songlist.value().property("songPicRadio").toString();
+    qDebug()<<"jpg:"<<imglink<<endl;
+    QNetworkAccessManager manager;
+    QEventLoop loop;
+    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(imglink)));
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+    QByteArray jpgData = reply->readAll();
+    QPixmap pixmap,pixmap2;
+    pixmap.loadFromData(jpgData);
+    pixmap2=pixmap.scaled(70,70,Qt::KeepAspectRatio);
+    if(!pixmap.isNull()){
+        piclabel->setPixmap(pixmap);
+        piclabel2->setPixmap(pixmap2);
     }
 }
