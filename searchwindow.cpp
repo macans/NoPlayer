@@ -3,12 +3,14 @@
 SearchWindow::SearchWindow(QWidget *parent)
 : QWidget(parent)
 {
-	QNetworkProxy proxy;
+    /*
+    QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::Socks5Proxy);
 	proxy.setHostName("127.0.0.1");
 	proxy.setPort(1080);
 	QNetworkProxy::setApplicationProxy(proxy);
 
+    */
 	textEdit = new QTextEdit(this);
 	toolButton = new QToolButton(this);
 	listWidget = new QListWidget(this);

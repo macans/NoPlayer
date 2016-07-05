@@ -31,6 +31,7 @@ public:
 private:
     void createwidgets();
     void getlrc();
+    void showNetimg();
 	int curPlayModel;
     QString musicinfo;
     QMediaPlayer *player;

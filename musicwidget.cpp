@@ -19,6 +19,7 @@ MusicWidget::MusicWidget(QWidget *parent,QMediaPlayer *player) : QWidget(parent)
 MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QMediaPlayer *player):musicinfo(musicinfo),lrclink(lrclink),QWidget(parent),player(player),piclabel(0)
   ,piclabel2(0),timelabel(0),infolabel(0),ratelabel(0),lrclabel(0)
 {
+    /*
 	QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::HttpProxy);
 	proxy.setHostName("10.1.243.240");
@@ -26,14 +27,15 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
 	QNetworkProxy::setApplicationProxy(proxy);
     createwidgets();
 	this->curPlayModel = MODEL_NET;
-
+*/
+	createwidgets();
 	curTime = QTime::currentTime();
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
     connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateNetinfo()));
+    showNetimg();
     getlrc();
 	qDebug() << curTime.toString();
-	player->play();
 }
 void MusicWidget::updateDuration(qint64 duration){
     //总时间
@@ -45,7 +47,6 @@ void MusicWidget::updateDuration(qint64 duration){
 
 void MusicWidget::updateInfo(){
     //获取歌曲名和歌手
-	qDebug() << curTime.toString();
     QStringList info;
     QString author=player->metaData("Author").toString();
     info += author;
@@ -63,6 +64,8 @@ void MusicWidget::updateInfo(){
     info2 += srate;
     ratelabel->setText(info2.join(tr("|")));
     //获取专辑图片
+    piclabel->clear();
+    piclabel2->clear();
     QImage *img=new QImage;
     QImage *img2=new QImage;
     *img =player->metaData("ThumbnailImage").value<QImage>();
@@ -71,11 +74,14 @@ void MusicWidget::updateInfo(){
     piclabel->setPixmap(QPixmap::fromImage(*img));
     piclabel2->setPixmap(QPixmap::fromImage(*img2));
     }
+    else{
+        piclabel->setPixmap(QPixmap::fromImage(*localimg));
+        piclabel2->setPixmap(QPixmap::fromImage(localimg->scaled(70,70,Qt::KeepAspectRatio)));
+    }
 }
 
 void MusicWidget::updatePosition(qint64 position){
     //当前播放时间
-	qDebug() << curTime.toString();
     QTime now(0, position / 60000, qRound((position % 60000) / 1000.0));
     nowtime=now.toString(tr("mm:ss"));
     QStringList timeinfo;
@@ -116,27 +122,6 @@ void MusicWidget::updateNetinfo(){
     QString srate =  QString(tr("44kHz"));
     info2 += srate;
     ratelabel->setText(info2.join(tr("|")));
-    //解析musicinfo，获取专辑图片
-    QScriptEngine engine;
-    QScriptValue sc =  engine.evaluate("value=" + musicinfo);
-    qDebug()<<sc.property("data").property("songList").isArray()<<endl;
-    QScriptValueIterator songlist(sc.property("data").property("songList"));
-    songlist.next();
-    QString imglink = songlist.value().property("songPicRadio").toString();
-    qDebug()<<"jpg:"<<imglink<<endl;
-    QNetworkAccessManager manager;
-    QEventLoop loop;
-    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(imglink)));
-    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-    loop.exec();
-    QByteArray jpgData = reply->readAll();
-    QPixmap pixmap,pixmap2;
-    pixmap.loadFromData(jpgData);
-    pixmap2=pixmap.scaled(70,70,Qt::KeepAspectRatio);
-    if(!pixmap.isNull()){
-        piclabel->setPixmap(pixmap);
-        piclabel2->setPixmap(pixmap2);
-    }
 }
 
 void MusicWidget::createwidgets(){
@@ -144,10 +129,7 @@ void MusicWidget::createwidgets(){
     piclabel = new QLabel(this);
     piclabel2 = new QLabel(this);
     localimg=new QImage(":/image/logo.png");
-    QImage *img2=new QImage;
-    piclabel->setPixmap(QPixmap::fromImage(*localimg));
-    *img2=localimg->scaled(70,70,Qt::KeepAspectRatio);
-    piclabel2->setPixmap(QPixmap::fromImage(*img2));
+
     timelabel = new QLabel(tr("00:00/00:00"),this);
     infolabel = new QLabel(this);
     ratelabel = new QLabel(this);
@@ -162,7 +144,7 @@ void MusicWidget::createwidgets(){
     QBoxLayout *layout = new QVBoxLayout(this);
     layout->addWidget(piclabel, 2,Qt::AlignCenter);
     layout->addLayout(musicLayout);
-	layout->addWidget(lrclabel);
+    layout->addWidget(lrclabel);
 }
 
 
@@ -210,11 +192,40 @@ void MusicWidget::getlrc(){
             lrcItem lrctemp;
             lrctemp.lrctime=time;
             lrctemp.text=temp;
-            qDebug()<<temp<<endl;
             // 插入到subtitle
             lrctitle.push_back(lrctemp);
             pos += rx.matchedLength();
             pos = rx.indexIn(oneline, pos);//匹配全部
         }
+    }
+}
+
+void MusicWidget::showNetimg(){
+    //解析musicinfo，获取专辑图片
+    piclabel->clear();
+    piclabel2->clear();
+    QScriptEngine engine;
+    QScriptValue sc =  engine.evaluate("value=" + musicinfo);
+    qDebug()<<sc.property("data").property("songList").isArray()<<endl;
+    QScriptValueIterator songlist(sc.property("data").property("songList"));
+    songlist.next();
+    QString imglink = songlist.value().property("songPicRadio").toString();
+    qDebug()<<"jpg:"<<imglink<<endl;
+    QNetworkAccessManager manager;
+    QEventLoop loop;
+    QNetworkReply *reply = manager.get(QNetworkRequest(QUrl(imglink)));
+    QObject::connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+    loop.exec();
+    QByteArray jpgData = reply->readAll();
+    QPixmap pixmap,pixmap2;
+    pixmap.loadFromData(jpgData);
+    pixmap2=pixmap.scaled(70,70,Qt::KeepAspectRatio);
+    if(!pixmap.isNull()){
+        piclabel->setPixmap(pixmap);
+        piclabel2->setPixmap(pixmap2);
+    }
+    else{
+        piclabel->setPixmap(QPixmap::fromImage(*localimg));
+        piclabel2->setPixmap(QPixmap::fromImage(localimg->scaled(70,70,Qt::KeepAspectRatio)));
     }
 }
