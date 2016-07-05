@@ -25,16 +25,19 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
 	proxy.setHostName("10.1.243.240");
 	proxy.setPort(8080);
 	QNetworkProxy::setApplicationProxy(proxy);
-    createwidgets();
+	*/
+    
 	this->curPlayModel = MODEL_NET;
-*/
+
 	createwidgets();
 	curTime = QTime::currentTime();
+	getlrc();
+	showNetimg();
     connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
     connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateNetinfo()));
-    showNetimg();
-    getlrc();
+	player->play();
+   
 	qDebug() << curTime.toString();
 }
 void MusicWidget::updateDuration(qint64 duration){
@@ -71,11 +74,11 @@ void MusicWidget::updateInfo(){
     *img =player->metaData("ThumbnailImage").value<QImage>();
     *img2=img->scaled(70,70,Qt::KeepAspectRatio);
     if(!img->isNull()){
-    piclabel->setPixmap(QPixmap::fromImage(*img));
+    piclabel->setPixmap(QPixmap::fromImage(img->scaled(400,400,Qt::KeepAspectRatio)));
     piclabel2->setPixmap(QPixmap::fromImage(*img2));
     }
     else{
-        piclabel->setPixmap(QPixmap::fromImage(*localimg));
+		piclabel->setPixmap(QPixmap::fromImage(localimg->scaled(400, 400, Qt::KeepAspectRatio)));
         piclabel2->setPixmap(QPixmap::fromImage(localimg->scaled(70,70,Qt::KeepAspectRatio)));
     }
 }

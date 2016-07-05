@@ -138,6 +138,7 @@ private:
 	int curPlayFlag;
 	QStringList typeAllowed;
 	QHBoxLayout *displayLayout, *controlLayout, *subLabelLayout;
+	QVBoxLayout *layout;
     QGridLayout *grid;
 
 	//ÓÒ¼ü²Ëµ¥

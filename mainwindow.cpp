@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	player = new QMediaPlayer(this);
 	playList = new QMediaPlaylist();
 	player->setPlaylist(playList);
-	//player->setMedia(QUrl::fromLocalFile("E:\\test.mkv"));
+    //player->setMedia(QUrl::fromLocalFile("E:\\test.mkv"));
 	
 	//播放视频
 	playWidget = new VideoWidget(this);
@@ -52,8 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	//controls->hide();
 	
     subLabel = new SubtitleLabel(this, playConfig);
-    subLabel->setStyleSheet("color:red;");
-    subLabel->subtitleChanged();
+    //subLabel->setStyleSheet("color:red;");
     subLabel->setObjectName("subLabel");
 
 	controlWindow = new ControlWindow;
@@ -83,7 +82,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //布局
    //QGridLayout *grid=new QGridLayout();
 	playlistWindow->hide();
-	grid = NULL, 
+	grid = NULL;
+	layout = 0;
 	controlLayout = subLabelLayout = displayLayout = NULL;
 	initLayout();
 	// this->setWindowFlags(Qt::FramelessWindowHint);
@@ -176,7 +176,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 		controls->show();
 	}
 	else{
-		controls->hide();
+        //controls->hide();
 	}
 }
 
@@ -397,7 +397,7 @@ void MainWindow::itemDoubleClicked(QListWidgetItem *item)
 		player->play();
 	}
 	else{
-		searchWindow->getSongInfo(idStr, false);
+		//searchWindow->getSongInfo(idStr, false);
 	}
 }
 
@@ -594,8 +594,11 @@ void MainWindow::initLayout()
 	delete subLabelLayout;
 	delete displayLayout;
 	delete grid;
-	
-	grid = new QGridLayout;
+	delete layout;
+
+	layout = new QVBoxLayout;
+
+	//grid = new QGridLayout;
 	displayLayout = new QHBoxLayout;
 	displayLayout->addWidget(playWidget);
 
@@ -604,15 +607,16 @@ void MainWindow::initLayout()
 	subLabelLayout = new QHBoxLayout;
 	subLabelLayout->addWidget(subLabel);
 	//controlLayout->addStretch(1);
-	grid->addLayout(displayLayout, 0, 0, 100, 100);
-	grid->addLayout(subLabelLayout, 78, 19, 5, 60);
-	grid->addLayout(controlLayout, 79, 19, 20, 60);
-	/*QBoxLayout *layout = new QVBoxLayout;
+	//grid->addLayout(displayLayout, 0, 0, 100, 100);
+	//grid->addLayout(subLabelLayout, 78, 19, 5, 60, Qt::AlignBottom);
+	//grid->addLayout(controlLayout, 79, 19, 20, 60, Qt::AlignTop);
+	layout = new QVBoxLayout;
 	layout->setMargin(0);
 	layout->addLayout(displayLayout, 2);
-	layout->addLayout(controlLayout);*/
-	grid->setMargin(0);
-	this->setLayout(grid);
+	layout->addLayout(subLabelLayout);
+	layout->addLayout(controlLayout);
+	//grid->setMargin(0);
+	this->setLayout(layout);
 }
 
 

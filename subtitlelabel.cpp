@@ -3,13 +3,14 @@
 SubtitleLabel::SubtitleLabel(QWidget *parent, PlayConfig *config) : QLabel(parent)
 {
 	this->subDelay = config->subDelay;
+	QString color = "color: " + QColor(config->subColor).name();
+	this->setStyleSheet(color);
 	this->setText("sub title");
 }
 
 void SubtitleLabel::subtitleChanged(const QString &subName)
 {
-	QString name = "E:\\test.srt";
-	QFile file(name);
+	QFile file(subName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 		return;
 	}
@@ -59,9 +60,10 @@ void SubtitleLabel::subtitleChanged(const QString &subName)
 
 void SubtitleLabel::updateSubTitle(qint64 progress)
 {
+	if (subtitle.size() == 0) return;
 	progress += subDelay;
 	QVector<subItem>::iterator it = qLowerBound(subtitle.begin(), subtitle.end(), subItem(0, progress, ""));
-	auto t = *it;
+	if (it == subtitle.end()) return;
 	if ((*it).msecBegin < progress){
 		this->setText((*it).text);
 	}
