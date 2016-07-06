@@ -31,13 +31,15 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
 
 	createwidgets();
 	curTime = QTime::currentTime();
+	
+	connect(player, SIGNAL(metaDataAvailableChanged(bool)), this, SLOT(updateNetinfo()));
+	connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(updateDuration(qint64)));
 	getlrc();
 	showNetimg();
-    connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
+	
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
-    connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateNetinfo()));
-	player->play();
    
+	
 	qDebug() << curTime.toString();
 }
 void MusicWidget::updateDuration(qint64 duration){

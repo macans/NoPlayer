@@ -12,15 +12,9 @@
 #include <QMediaPlaylist>
 #include <QFileInfo>
 #include <QFileDialog>
-#define ITEM_COLOR_NORMAL "#f68"
-#define ITEM_COLOR_PLAY "#129"
-#define ITEM_COLOR_SEARCH "#19c"
-#define CUR_ITEM_LOOP 0x1
-#define SEQUENTIAL 0x2
-#define LOOP 0x3
-#define RANDOM 0x4
-#define MEDIA_TYPE_MUSIC 0
-#define MEDIA_TYPE_VIDEO 1
+#include <QtScript>
+
+#include "playconfig.h"
 
 
 class PlaylistWindow : public QWidget
@@ -36,10 +30,11 @@ signals:
     void	itemActivated(QListWidgetItem * item);
     void	itemChanged(QListWidgetItem * item);
     void	itemClicked(QListWidgetItem * item);
-    void	itemDoubleClicked(QListWidgetItem * item);
+    void	itemDoubleClicked(QListWidgetItem * item, bool doubleClicked = false);
     void	itemEntered(QListWidgetItem * item);
     void	itemPressed(QListWidgetItem * item);
     void	itemSelectionChanged();
+	void playlistWindowClosed();
 
 public slots:
     void clear();
@@ -55,6 +50,9 @@ public slots:
     void next();
     void previous();
     void openfiles();
+	void closeEvent(QCloseEvent *event);
+	void savePlaylist();
+	void loadPlaylist();
 private:
     QListWidget *listWidget;
     QLineEdit *search_edit;
@@ -69,6 +67,7 @@ private:
     int playBackMode = SEQUENTIAL;
 
 	bool indexChangeAllowed;
+	bool doubleClicked;
 
 
 private:
@@ -77,8 +76,8 @@ private:
 
 public:
     int addItemFromLocal(const QStringList &addList,bool playNow = true);
-    int addItemFromNet(const QString &additem,const QString &link,int id);
-
+    int addItemFromNet(const QString &additem,const QString &link,int id, bool playNow = true);
+	
 
 };
 

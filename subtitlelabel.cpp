@@ -3,15 +3,16 @@
 SubtitleLabel::SubtitleLabel(QWidget *parent, PlayConfig *config) : QLabel(parent)
 {
 	this->subDelay = config->subDelay;
-	QString color = "color: " + QColor(config->subColor).name();
-	this->setStyleSheet(color);
+	this->color = "<font color=" + config->subColor + ">%1</font>";
 	this->setText("sub title");
 }
 
-void SubtitleLabel::subtitleChanged(const QString &subName)
+void SubtitleLabel::subtitleChanged(QString subName)
 {
+	subName = subName.left(subName.lastIndexOf('.')) + ".srt";
 	QFile file(subName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+		subtitle.clear();
 		return;
 	}
 	int hBegin, mBegin, sBegin, msBegin;
@@ -47,11 +48,14 @@ void SubtitleLabel::subtitleChanged(const QString &subName)
 		int len;
 		while (str[0] != '\n'){
 			temp.text += str;
+			temp.text.append("<br/>");
 			line = file.readLine();
 			if (file.atEnd()) break;
 			str = codec->toUnicode(line);
 			len = str.length();
 		}
+		int pos = temp.text.indexOf('{');
+		temp.text = temp.text.left(pos) + temp.text.right(pos + 6);
 		subtitle.push_back(temp);
 		file.readLine();
 	}
@@ -65,7 +69,8 @@ void SubtitleLabel::updateSubTitle(qint64 progress)
 	QVector<subItem>::iterator it = qLowerBound(subtitle.begin(), subtitle.end(), subItem(0, progress, ""));
 	if (it == subtitle.end()) return;
 	if ((*it).msecBegin < progress){
-		this->setText((*it).text);
+		QString text = this->color.arg((*it).text);
+		this->setText(text);
 	}
 	else{
 		this->setText("");
@@ -80,6 +85,6 @@ void SubtitleLabel::fontChanged(QFont font)
 void SubtitleLabel::colorChanged(QColor color)
 {
 	QString name = color.name();
-	this->setStyleSheet("{color:" + name + "}");
+	this->color = "<font color=" + name + ">%1</font>";
 }
 

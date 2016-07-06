@@ -27,10 +27,11 @@ public slots:
 	void updateSubTitle(qint64 progress);
 	void fontChanged(QFont font);
 	void colorChanged(QColor color);
-	void subtitleChanged(const QString &subName = "");
+	void subtitleChanged(QString subName = "");
 
 private:
 	qint64 subDelay;
+	QString color;
 	QVector<subItem> subtitle;  
 };
 

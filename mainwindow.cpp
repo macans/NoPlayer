@@ -27,7 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	player->play();
 
 	playlistWindow = new PlaylistWindow(playList);
-	connect(playlistWindow, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
+	connect(playlistWindow, SIGNAL(itemDoubleClicked(QListWidgetItem*, bool)), this, SLOT(itemDoubleClicked(QListWidgetItem*, bool)));
+	connect(playlistWindow, SIGNAL(playlistWindowClosed()), this, SLOT(playlistButtonClicked()));
 
 	//下方控制块
 	controls = new PlayControls(this);
@@ -58,9 +59,19 @@ MainWindow::MainWindow(QWidget *parent) :
 	controlWindow = new ControlWindow;
 	//controlWindow;
 	connect(controlWindow, SIGNAL(controlWindowClosed()), this, SLOT(controlButtonClicked()));
-	connect(controlWindow, SIGNAL(fontChanged(QFont)), subLabel, SLOT(fontChanged(QFont)));
-	connect(controlWindow, SIGNAL(colorChanged(QColor)), subLabel, SLOT(colorChanged(QColor)));
+	connect(controlWindow, SIGNAL(fontChanged(QFont)), this, SLOT(fontChanged(QFont)));
+	connect(controlWindow, SIGNAL(colorChanged(QColor)),this, SLOT(colorChanged(QColor)));
 	connect(controlWindow, SIGNAL(subtitleChanged(QString)), subLabel, SLOT(subtitleChanged(QString)));
+
+	connect(controlWindow, SIGNAL(rateSlowDown()), this, SLOT(rateSlowDown()));
+	connect(controlWindow, SIGNAL(rateSpeedUp()), this, SLOT(rateSpeedUp()));
+	connect(controlWindow, SIGNAL(rateDefault()), this, SLOT(initPlaybackRate()));
+
+	connect(controlWindow, SIGNAL(rewindSec(qint64)), this, SLOT(rewind(qint64)));
+	connect(controlWindow, SIGNAL(rewindMsec(qint64)), this, SLOT(rewind(qint64)));
+	connect(controlWindow, SIGNAL(fastforwordSec()), this, SLOT(fastforword()));
+	connect(controlWindow, SIGNAL(fastforwordMsec()), this, SLOT(fastforword(qint64)));
+
 	controlWindow->setHueFUN(playConfig->hue);
 	controlWindow->setContrastFUN(playConfig->contrast);
 	controlWindow->setBritghtnessFUN(playConfig->brightness);
@@ -71,6 +82,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	searchWindow = new SearchWindow;
 	searchWindow->hide();
 	connect(searchWindow, SIGNAL(getInfoComplete(bool, InfoNetMusic&)), this, SLOT(getInfoComplete(bool, InfoNetMusic&)));
+	connect(searchWindow, SIGNAL(searchWindowClosed()), this, SLOT(searchButtonClicked()));
 
 	connect(player, SIGNAL(positionChanged(qint64)), subLabel, SLOT(updateSubTitle(qint64)));
 	connect(player, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
@@ -285,14 +297,32 @@ void MainWindow::loadLocalConfig()
 	QScriptValue val = engine.evaluate("value=" + config);
 	qDebug() << val.toString();
 	playConfig = new PlayConfig;
-	playConfig->msecForword = val.property("msec_forword").toInt32();
-	playConfig->msecRewind = val.property("msec_rewind").toInt32();
+	int msecForword = val.property("msec_forword").toInt32();
+	int msecRewind = val.property("msec_rewind").toInt32();
+	if (msecForword != 0){
+		playConfig->msecForword = msecForword;
+	}
+	else{
+		playConfig->msecForword = 5000;
+	}
+	if (msecRewind != 0){
+		playConfig->msecRewind = msecRewind;
+	}
+	else{
+		playConfig->msecRewind = 5000;
+	}
 	playConfig->subDelay = 0;
 	playConfig->hue = 50;
 	playConfig->brightness = 50;
 	playConfig->contrast = 50;
 	playConfig->stopWhenMin = val.property("stop_while_min").toInt32();
-	playConfig->subColor = val.property("sub_color").toInt32();
+	QString color = val.property("sub_color").toString();
+	if (color == ""){
+		playConfig->subColor = "black";
+	}
+	else{
+		playConfig->subColor = color;
+	}
 	playConfig->subFont = val.property("sub_font").toString();
 }
 
@@ -305,15 +335,15 @@ void MainWindow::initPlayWidget(int isVideo, int isLocal, QString info, QString 
 	}
 	else if (isVideo != curPlayFlag){
 		delete playWidget;
-		if (isVideo == PLAY_MUSIC){
+		if (isVideo == MEDIA_TYPE_MUSIC){
 			playWidget = new MusicWidget(this, player);
-			curPlayFlag = PLAY_MUSIC;
+			curPlayFlag = MEDIA_TYPE_MUSIC;
 			subLabel->hide();
 		}
 		else{
 			playWidget = new VideoWidget(this);
 			player->setVideoOutput((QVideoWidget*)playWidget);
-			curPlayFlag = PLAY_VIDEO;
+			curPlayFlag = MEDIA_TYPE_VIDEO;
 			subLabel->show();
 		}
 	}
@@ -346,21 +376,24 @@ void MainWindow::getInfoComplete(bool flag, InfoNetMusic &info)
 	qDebug() << info.info << endl;
 	int id;
 	//flag = true 是新添加的歌曲
+	initPlayWidget(MEDIA_TYPE_MUSIC, MODEL_NET, info.info, info.lrclink);
 	if (flag){
 		//将链接加到播放列表
 		playlistWindow->addItemFromNet(info.name, info.link, info.id);
 	}
-	initPlayWidget(PLAY_MUSIC, MODEL_NET, info.info, info.lrclink);
+	
 }
 
 void MainWindow::fontChanged(QFont font)
 {
 	playConfig->subFont = font.family();
+	subLabel->fontChanged(font);
 }
 
 void MainWindow::colorChanged(QColor color)
 {
 	playConfig->subColor = color.value();
+	subLabel->colorChanged(color);
 }
 
 void MainWindow::savePlayConfig()
@@ -388,16 +421,20 @@ void MainWindow::savePlayList()
 
 }
 
-void MainWindow::itemDoubleClicked(QListWidgetItem *item)
+void MainWindow::itemDoubleClicked(QListWidgetItem *item, bool doubleClicked)
 {
 	int flag = item->statusTip().toInt();
 	QString idStr = item->whatsThis();
+	QString name = item->toolTip();
 	if (idStr == ""){
 		initPlayWidget(flag, MODEL_LAC);
+		if (flag == MEDIA_TYPE_VIDEO){
+			subLabel->subtitleChanged(name);
+		}
 		player->play();
 	}
-	else{
-		//searchWindow->getSongInfo(idStr, false);
+	else if (doubleClicked){
+		searchWindow->getSongInfo(idStr, false);
 	}
 }
 
@@ -435,7 +472,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 			raiseVolume(-VOLUME_STEP);
 			break;
 		case Qt::Key_Escape:
-			if (curPlayFlag == PLAY_VIDEO && ((QVideoWidget*)playWidget)->isFullScreen()){
+			if (curPlayFlag == MEDIA_TYPE_VIDEO && ((QVideoWidget*)playWidget)->isFullScreen()){
 				((QVideoWidget*)playWidget)->setFullScreen(false);
 			}
 			break;
@@ -468,8 +505,9 @@ void MainWindow::raiseVolume(int step)
 
 void MainWindow::raisePlaybackRate(qreal step)
 {
-	qreal rate = player->playbackRate() + step;
-	rate = qMin(PLAYRATE_MIN, rate);
+	qreal rate = player->playbackRate();
+	rate += step;
+	rate = qMax(PLAYRATE_MIN, rate);
 	player->setPlaybackRate(rate);
 }
 
@@ -486,7 +524,7 @@ void MainWindow::raiseSubtitleDelay(qint64 step)
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	savePlayConfig();
-	savePlayList();
+	playlistWindow->savePlaylist();
 	playlistWindow->close();
 	searchWindow->close();
 	controlWindow->close();
@@ -558,7 +596,7 @@ void MainWindow::getMediaList(QString path)
 //发送全屏信号
 void MainWindow::changeScreen()
 {
-	if (curPlayFlag == PLAY_VIDEO){
+	if (curPlayFlag == MEDIA_TYPE_VIDEO){
 		((QVideoWidget*)playWidget)->setFullScreen(playWidget->isFullScreen());
 	}
 }
@@ -618,6 +656,17 @@ void MainWindow::initLayout()
 	//grid->setMargin(0);
 	this->setLayout(layout);
 }
+
+void MainWindow::rateSlowDown()
+{
+	raisePlaybackRate(-PLAYRATE_STEP);
+}
+
+void MainWindow::rateSpeedUp()
+{
+	raisePlaybackRate(PLAYRATE_STEP);
+}
+
 
 
 /*

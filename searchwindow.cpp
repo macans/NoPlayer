@@ -3,16 +3,18 @@
 SearchWindow::SearchWindow(QWidget *parent)
 : QWidget(parent)
 {
-    /*
+
     QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::Socks5Proxy);
 	proxy.setHostName("127.0.0.1");
 	proxy.setPort(1080);
 	QNetworkProxy::setApplicationProxy(proxy);
 
-    */
-	textEdit = new QTextEdit(this);
-	toolButton = new QToolButton(this);
+
+	textEdit = new QLineEdit(this);
+    toolButton = new QPushButton(this);
+    toolButton->setObjectName("findButton");
+
 	listWidget = new QListWidget(this);
 	connect(listWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(itemDoubleClicked(QListWidgetItem*)));
 	connect(toolButton, SIGNAL(clicked()), this, SLOT(toolButtonClicked()));
@@ -34,13 +36,14 @@ SearchWindow::~SearchWindow()
 
 void SearchWindow::toolButtonClicked()
 {
-	QString keyword = textEdit->toPlainText();
+	QString keyword = textEdit->text();
 	QString str = QString(API_OF_SEARCH).arg(keyword).arg(0);
 	QUrl url(str);
 	QNetworkRequest request;
 	request.setUrl(url);
 	//searchReply = manager->get(QNetworkRequest(url));
 	searchReply = manager.get(request);
+	listWidget->clear();
 	connect(searchReply, SIGNAL(finished()), this, SLOT(searchReplyFinished()));
 }
 
@@ -161,6 +164,12 @@ void SearchWindow::linkReplyFinished()
 		}
 	}
 }
+
+void SearchWindow::closeEvent(QCloseEvent *event)
+{
+	emit searchWindowClosed();
+}
+
 /*
 "{
 "errorCode":22000,

@@ -8,7 +8,9 @@
 #include <QFile>
 #include <QWidget>
 #include <QTextEdit>
+#include <QLineEdit>
 #include <QToolButton>
+#include <QPushButton>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QtNetwork>
@@ -29,12 +31,14 @@ public:
 	void getSongInfo(QString songId, bool isNewSong);
 signals:
 	void getInfoComplete(bool isNewSong, InfoNetMusic &info);
+	void searchWindowClosed();
 public slots:
 	void toolButtonClicked();
 	void searchReplyFinished();
 	void infoReplyFinished();
 	void linkReplyFinished();
 	void itemDoubleClicked(QListWidgetItem *item);
+	void closeEvent(QCloseEvent *event);
 private:
 	bool isNewSong;
 	InfoNetMusic info;
@@ -43,8 +47,8 @@ private:
 	QNetworkReply *infoReply;
 	QNetworkReply *linkReply;
 
-	QTextEdit *textEdit;
-	QToolButton *toolButton;
+	QLineEdit *textEdit;
+    QPushButton *toolButton;
 	QListWidget *listWidget;
 	QScriptValue searchResult;
 };

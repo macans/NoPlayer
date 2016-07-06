@@ -71,8 +71,8 @@ public:
 	void savePlayConfig();
 	void savePlayList();
 	void raiseVolume(int step);
-	void raisePlaybackRate(qreal step);
 	void raiseSubtitleDelay(qint64 step);
+	void raisePlaybackRate(qreal step);
 	void initPlaybackRate();
 	void loadLocalConfig();
 	void initLayout();
@@ -88,21 +88,24 @@ public:
 	void contextMenuEvent(QContextMenuEvent *event);
 	void setTheMenu();
 	void getMediaList(QString path);
+
 public slots:
 	//播放列表
-	void itemDoubleClicked(QListWidgetItem *item);
+	void itemDoubleClicked(QListWidgetItem *item, bool doubleClicked);
 
 	//控制面板
 	void fontChanged(QFont font);
 	void colorChanged(QColor color);
 
+	void rateSlowDown();
+	void rateSpeedUp();
 	//搜索
 	void getInfoComplete(bool flag, InfoNetMusic &info);
 
 	//控制栏
 	void nextClicked();
 	void previousClicked();
-	void fastforword(int msec = 0);
+	void fastforword(int msec = 1000);
 	void rewind(int msec = 0);
 	void openFile();
 	void controlButtonClicked();

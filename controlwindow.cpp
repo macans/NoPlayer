@@ -180,16 +180,15 @@ QWidget(parent)
     connect(morezimu, SIGNAL(clicked(bool)), this, SLOT(zimushowFUN()));
     //-------------------------------------------
 
-	connect(seekbeforemi, SIGNAL(clicked(bool)), this, SIGNAL(seekbeforemi()));
+	connect(seekbeforemi, SIGNAL(clicked(bool)), this, SIGNAL(rewindSec(qint64)));
 
-	connect(seekbeforesec, SIGNAL(clicked(bool)), this, SIGNAL(seekbeforesec()));
-	connect(seekaftersec, SIGNAL(clicked(bool)), this, SIGNAL(seekaftersec()));
-	connect(seekaftermi, SIGNAL(clicked(bool)), this, SIGNAL(seekafteremi()));
+	connect(seekbeforesec, SIGNAL(clicked(bool)), this, SIGNAL(rewindMsec(qint64)));
+	connect(seekaftersec, SIGNAL(clicked(bool)), this, SIGNAL(fastforwordSec()));
+	connect(seekaftermi, SIGNAL(clicked(bool)), this, SIGNAL(fastforwordMsec(qint64)));
 
-	connect(slow, SIGNAL(clicked(bool)), this, SIGNAL(slowdown()));
-
-	connect(speedup, SIGNAL(clicked(bool)), this, SIGNAL(spedup()));
-	connect(defaults, SIGNAL(clicked(bool)), this, SIGNAL(defaltspeed()));
+	connect(slow, SIGNAL(clicked(bool)), this, SIGNAL(rateSlowDown()));
+	connect(speedup, SIGNAL(clicked(bool)), this, SIGNAL(rateSpeedUp()));
+	connect(defaults, SIGNAL(clicked(bool)), this, SIGNAL(rateDefault()));
     //when video opened,the size
     connect(Csize,SIGNAL(currentIndexChanged(int)),this,SIGNAL(sizeChanged(int)));
 
@@ -206,7 +205,7 @@ QWidget(parent)
 
 ControlWindow::~ControlWindow()
 {
-    emit ControlWindowClosed();
+    
 }
 
 void ControlWindow::colorshowFUN()
@@ -218,7 +217,7 @@ void ControlWindow::colorshowFUN()
 	QColor color = dialog.currentColor();
 	if (color.isValid()){
 		colorshow->setPalette(QPalette(color));
-        emit colorchanged(color);
+        emit colorChanged(color);
 	}
 
 }
@@ -239,6 +238,7 @@ void ControlWindow::fontshowFUN(){
 void ControlWindow::zimushowFUN()
 {
     QString filename = QFileDialog::getOpenFileName(this, tr("打开文件"), "/", tr("字幕(*srt)"));
+	emit subtitleChanged(filename);
 
 }
 
@@ -249,7 +249,7 @@ void ControlWindow::doSome()
 
 void ControlWindow::closeEvent(QCloseEvent *event)
 {
-    emit ControlWindowClosed();
+    emit controlWindowClosed();
 }
 
 /*void ControlWindow::setVolume(int number1){

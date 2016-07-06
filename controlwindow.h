@@ -1,5 +1,6 @@
 #ifndef CONTROLWINDOW_H
 #define CONTROLWINDOW_H
+#include "playconfig.h"
 #include "shortcut.h"
 #include <QWidget>
 #include<QLabel>
@@ -13,7 +14,6 @@ class ControlWindow : public QWidget
 public:
     explicit ControlWindow(QWidget *parent = 0);
     ~ControlWindow();
-	void closeEvent(QCloseEvent *event);
     //void setVolume(int number1);
      void setHueFUN(int number2);
       void setContrastFUN(int number3);
@@ -29,18 +29,23 @@ signals:
 	void seekbeforesec();
 	void seekafteremi();
 	void seekaftersec();
-	void slowdown();
-	void spedup();
-	void defaltspeed();
-    void ControlWindowClosed();
+	void rateSlowDown();
+	void rateSpeedUp();
+	void rateDefault();
+	void rewindSec(qint64 sec = -SRCH_STEP_MIN);
+	void rewindMsec(qint64 msec = -SRCH_STEP_SEC);
+	void fastforwordSec();
+	void fastforwordMsec(qint64 msec = SRCH_STEP_MIN);
+    void controlWindowClosed();
      void sizeChanged(int);
      void minithenpause(bool);
-
      void fontChanged(QFont newfont);
- //void fontChanged(QFont newfont);
- void colorchanged(QColor newcolor);
-	private slots:
-
+	//void fontChanged(QFont newfont);
+	void colorChanged(QColor newcolor);
+	void subtitleChanged(QString name);
+	
+private slots:
+	void closeEvent(QCloseEvent *event);
      void colorshowFUN();
 
      void fontshowFUN();
@@ -57,6 +62,7 @@ signals:
 private:
 	QLabel *colorshow = new QLabel();
 	QLabel *fontshow = new QLabel("字体(font)");
+	static const int stepSec;
     int thenumber1;
     int thenumber2;
     int thenumber3;

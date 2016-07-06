@@ -2,14 +2,12 @@
 
 PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidget(parent)
 {
+	listWidget = new QListWidget(this);
+
     playlist = playList;
-    listWidget = new QListWidget(this);
-//  QStringList tempList;
-//  tempList.append("F:/math/test.mp4");
-//  this->addItemFromLocal(tempList,true);
-//  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-//  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
-//  this->addItemFromNet("Beyond-海阔天空","http://yinyueshiting.baidu.com/data2/music/238976206/877578151200128.mp3?xcode=2e844a1506aeb2b1d7984b79751f9d39",1232123);
+	loadPlaylist();
+
+	this->doubleClicked = false;
 
 
 	playlist->setPlaybackMode(QMediaPlaylist::Loop);
@@ -17,16 +15,16 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     QHBoxLayout *topLayout = new QHBoxLayout;
     topLayout->addWidget(listWidget);
     QHBoxLayout *bottomLayout = new QHBoxLayout;
-    playType = new QPushButton(QIcon(":image/ic6.png"),"");
+    playType = new QPushButton(QIcon(":image/seq.png"),"");
     playType->setToolTip("点击切换播放模式");
     search_edit = new QLineEdit();
-    search_btn = new QPushButton(QIcon(":image/ic7.png"),"");
+    search_btn = new QPushButton(QIcon(":image/search.ico"),"");
     search_btn->setToolTip("搜索");
-    addBtn = new QPushButton(QIcon(":image/ic4.png"),"");
+    addBtn = new QPushButton(QIcon(":image/openfile.ico"),"");
     addBtn->setToolTip("添加");
-    delBtn = new QPushButton(QIcon(":image/ic8.png"),"");
+    delBtn = new QPushButton(QIcon(":image/rmfile.ico"), "");
     delBtn->setToolTip("移除");
-    clearBtn = new QPushButton(QIcon(":image/ic9.png"),"");
+    clearBtn = new QPushButton(QIcon(":image/clear.ico"),"");
     clearBtn->setToolTip("清空");
     bottomLayout->addWidget(playType);
     bottomLayout->addWidget(search_edit);
@@ -38,6 +36,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     mainLayout->addLayout(topLayout);
     mainLayout->addLayout(bottomLayout);
     this->setLayout(mainLayout);
+	
 
 //-----signal-start------------
     connect(listWidget,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)),this,SIGNAL(currentItemChanged(QListWidgetItem*,QListWidgetItem*)));
@@ -145,7 +144,8 @@ void PlaylistWindow::setItemPlay(int row)
 	indexChangeAllowed = false;
 	int cnt = playlist->mediaCount();
     QListWidgetItem *item = listWidget->item(row);
-	emit itemDoubleClicked(item);
+	emit itemDoubleClicked(item, doubleClicked);
+	doubleClicked = false;
     this->setItemPlayView(item);
     qDebug("setItemPlay %d",row);
 	indexChangeAllowed = true;
@@ -185,22 +185,22 @@ void PlaylistWindow::setPlayMode()
     switch(playBackMode) {
     case CUR_ITEM_LOOP:
         playlist->setPlaybackMode(QMediaPlaylist::Random);
-        playType->setIcon(QIcon(":image/ic1.jpg"));
+        playType->setIcon(QIcon(":image/itemloop.ico"));
         playType->setToolTip("单曲循环");
         break;
     case SEQUENTIAL:
         playlist->setPlaybackMode(QMediaPlaylist::Sequential);
-        playType->setIcon(QIcon(":image/ic2.png"));
+        playType->setIcon(QIcon(":image/seq.png"));
         playType->setToolTip("顺序播放");
         break;
     case LOOP:
         playlist->setPlaybackMode(QMediaPlaylist::Loop);
-        playType->setIcon(QIcon(":image/ic3.png"));
+        playType->setIcon(QIcon(":image/listloop.ico"));
         playType->setToolTip("列表循环");
         break;
     case RANDOM:
         playlist->setPlaybackMode(QMediaPlaylist::Random);
-        playType->setIcon(QIcon(":image/ic4.png"));
+        playType->setIcon(QIcon(":image/random.ico"));
         playType->setToolTip("随机播放");
         break;
     default:
@@ -313,11 +313,17 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
             item->setText(index.append(item->text()));
             //设置item高度
             item->setSizeHint(QSize(100,30));
-            item->setIcon(QIcon(":/image/mp4.png"));
             item->setToolTip(label);
             //设置media的类型
             int type = getMediaType(label);
+
             if(type != -1){
+                if(type == MEDIA_TYPE_MUSIC){
+                    item->setIcon(QIcon(":/image/music.gif"));
+                }
+                else{
+                    item->setIcon(QIcon(":/image/video.ico"));
+                }
                 item->setStatusTip(QString::number(type,10));
             }
             this->setItemNormalView(item);
@@ -346,7 +352,7 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
 
 
 //添加网络item
-int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id)
+int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id, bool playNow)
 {
 	this->indexChangeAllowed = false;
     QListWidgetItem *item = new QListWidgetItem(additem,listWidget);
@@ -361,7 +367,7 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
     item->setText(index.append(item->text()));
     //设置item高度
     item->setSizeHint(QSize(100,30));
-    item->setIcon(QIcon(":/image/mp4.png"));
+    item->setIcon(QIcon(":/image/net.ico"));
     item->setWhatsThis(QString::number(id,10));
     item->setToolTip(additem);
     //设置media的类型
@@ -372,7 +378,9 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
     playlist->addMedia(QUrl(link));
 	this->indexChangeAllowed = true;
 //	this->setItemPlay(row);
-	playlist->setCurrentIndex(row);
+	if (playNow){
+		playlist->setCurrentIndex(row);
+	}
 	this->indexChangeAllowed = false;
     //qDebug("%d",playlist->currentIndex());
     return MEDIA_TYPE_MUSIC;
@@ -382,9 +390,78 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
 
 void PlaylistWindow::setPlaylistIndex(QListWidgetItem *item)
 {
+	this->doubleClicked = true;
 	int origin = playlist->currentIndex();
 	int cnt = playlist->mediaCount();
 	//setItemNormalView(listWidget->item(origin));
 	int row = listWidget->row(item);
 	playlist->setCurrentIndex(row);
+}
+
+void PlaylistWindow::closeEvent(QCloseEvent *event)
+{
+	emit playlistWindowClosed();
+}
+
+void PlaylistWindow::savePlaylist()
+{
+	//保存配置
+	QFile *playlistFile = new QFile("playlist.txt");
+	if (!playlistFile->open(QIODevice::WriteOnly | QIODevice::Text)){
+		qDebug() << "save playlist file failed" << endl;
+	}
+	QString playlistStr = "{\nplaylist:\n[\n";
+	for (int i = 0; i < listWidget->count(); i++) {
+		QString listitem = "{\n";
+		QListWidgetItem *item = listWidget->item(i);
+		if (item->whatsThis() == "") {
+			//local file
+			listitem += "\"is_local\":\"1\",\n";
+			listitem += "\"name\":\"" + QString(item->toolTip()) + "\"\n";
+
+		}
+		else {
+			listitem += "\"is_local\": \"0\",\n";
+			listitem += "\"name\":\"" + QString(item->toolTip()) + "\",\n";
+			listitem += "\"link\":\"" + QString(playlist->media(i).canonicalUrl().toString()) + "\",\n";
+			listitem += "\"id\":\"" + QString(item->whatsThis()) + "\"\n";
+		}
+		listitem += "},\n";
+		playlistStr += listitem;
+	}
+
+	playlistStr += "]\n}";
+
+	playlistFile->write(playlistStr.toLocal8Bit());
+	playlistFile->close();
+}
+
+void PlaylistWindow::loadPlaylist()
+{
+	//加载本地设置
+	QFile *playlistFile = new QFile("playlist.txt");
+	if (!playlistFile->open(QIODevice::ReadWrite | QIODevice::Text)){
+		qDebug() << "config file open failed" << endl;
+	}
+	else {
+		QString playlistStr = playlistFile->readAll();
+		QScriptEngine engine;
+		QScriptValue val = engine.evaluate("value=" + playlistStr);
+		QScriptValueIterator it(val.property("playlist"));
+
+		QStringList locallist;
+		while (it.hasNext())
+		{
+			it.next();
+			if (it.value().property("is_local").toString() == "1")
+			{
+				qDebug() << "name :" << it.value().property("name").toString();
+				locallist.append(it.value().property("name").toString());
+			}
+			else if (it.value().property("is_local").toString() == "0") {
+				addItemFromNet(it.value().property("name").toString(), it.value().property("link").toString(), it.value().property("id").toInt32(), false);
+			}
+		}
+		addItemFromLocal(locallist, false);
+	}
 }

@@ -222,6 +222,12 @@ width:30px;
 height:30px;
 }
 
+QPushButton#findButton{
+border-image:url(:/image/search1.png);
+width:18px;
+height:18px;
+}
+
 QPushButton#playlistButton{
 border-image:url(:/image/list1.png);
 width:30px;
