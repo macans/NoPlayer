@@ -2,40 +2,60 @@
 playlist:
 [
 {
-"is_local": "0",
-"name":"张国荣 - 我",
-"link":"http://yinyueshiting.baidu.com/data2/music/241741095/930068158400128.mp3?xcode=db462fcd040b8c9085429371225e2601",
-"id":"930068"
-},
-{
-"is_local": "0",
-"name":"张国荣 - 千千阙歌",
-"link":"http://yinyueshiting.baidu.com/data2/music/42565509/7313160172800128.mp3?xcode=db462fcd040b8c9023407a79428c3f0f",
-"id":"7313160"
-},
-{
-"is_local": "0",
-"name":"张国荣,许冠杰 - 沉默是金",
-"link":"http://yinyueshiting.baidu.com/data2/music/42546782/7316755154800128.mp3?xcode=17b93aee7dc1e24d23407a79428c3f0f",
-"id":"7316755"
-},
-{
-"is_local": "0",
-"name":"张国荣 - 暴风一族",
-"link":"http://yinyueshiting.baidu.com/data2/music/41861678/2324231467756061128.mp3?xcode=ea97d6325905b8bff1962d1d1690fc93",
-"id":"232423"
-},
-{
-"is_local": "0",
-"name":"张国荣 - 奔向未来日子",
-"link":"http://yinyueshiting.baidu.com/data2/music/41806359/206460129600128.mp3?xcode=ea97d6325905b8bf7e919dd56dd3c83c",
-"id":"206460"
+"is_local":"1",
+"name":"E:/Taylor Swift/Taylor Swift - A Place in This World.mp3"
 },
 {
 "is_local": "0",
 "name":"刘德华 - 一起走过的日子",
-"link":"http://yinyueshiting.baidu.com/data2/music/48068506/937197162000128.mp3?xcode=ea97d6325905b8bf26d7084657a59bf4",
+"link":"http://yinyueshiting.baidu.com/data2/music/48068506/937197162000128.mp3?xcode=bcfa15352525745a26bdb4a8ac0cec0f",
 "id":"937197"
+},
+{
+"is_local": "0",
+"name":"刘德华 - 谢谢你的爱",
+"link":"http://yinyueshiting.baidu.com/data2/music/42364740/733422975600128.mp3?xcode=898d4cf1cd07bd4fe4d6351b3c1b445d",
+"id":"7334229"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
+},
+{
+"is_local":"1",
+"name":"E:/Music/Beyond/海阔天空/Beyond - 海阔天空.mp3"
+},
+{
+"is_local":"1",
+"name":"E:/Music/邓丽君/我只在乎你/邓丽君 - 我只在乎你.mp3"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
+},
+{
+"is_local":"1",
+"name":"E:/Taylor Swift/Taylor Swift - Stay Beautiful.mp3"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
+},
+{
+"is_local":"1",
+"name":"E:/Flash/Youtube/Jiang/HK.mp4"
 },
 ]
 }

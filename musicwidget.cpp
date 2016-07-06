@@ -10,8 +10,9 @@ MusicWidget::MusicWidget(QWidget *parent,QMediaPlayer *player) : QWidget(parent)
 {
     createwidgets();
 	this->curPlayModel = MODEL_LAC;
-    connect(player,SIGNAL(durationChanged(qint64)),this,SLOT(updateDuration(qint64)));
+	connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(updateDuration(qint64)));
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
+	
     connect(player,SIGNAL(metaDataAvailableChanged(bool)),this,SLOT(updateInfo()));
 	player->play();
 }
@@ -26,20 +27,22 @@ MusicWidget::MusicWidget(QString musicinfo, QString lrclink, QWidget *parent, QM
 	proxy.setPort(8080);
 	QNetworkProxy::setApplicationProxy(proxy);
 	*/
-    
+	connect(player, SIGNAL(metaDataAvailableChanged(bool)), this, SLOT(updateNetinfo()));
+	//connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(updateDuration(qint64)));
+
+
 	this->curPlayModel = MODEL_NET;
 
 	createwidgets();
 	curTime = QTime::currentTime();
 	
-	connect(player, SIGNAL(metaDataAvailableChanged(bool)), this, SLOT(updateNetinfo()));
-	connect(player, SIGNAL(durationChanged(qint64)), this, SLOT(updateDuration(qint64)));
+	
 	getlrc();
 	showNetimg();
 	
     connect(player,SIGNAL(positionChanged(qint64)),this,SLOT(updatePosition(qint64)));
    
-	
+	player->play();
 	qDebug() << curTime.toString();
 }
 void MusicWidget::updateDuration(qint64 duration){
@@ -48,6 +51,7 @@ void MusicWidget::updateDuration(qint64 duration){
     this->duration=duration;
     QTime total(0, duration / 60000, qRound((duration % 60000) / 1000.0));
     totaltime=total.toString(tr("mm:ss"));
+	
 }
 
 void MusicWidget::updateInfo(){
@@ -86,16 +90,18 @@ void MusicWidget::updateInfo(){
 }
 
 void MusicWidget::updatePosition(qint64 position){
-    //当前播放时间
-    QTime now(0, position / 60000, qRound((position % 60000) / 1000.0));
-    nowtime=now.toString(tr("mm:ss"));
-    QStringList timeinfo;
-    timeinfo += nowtime;
-    timeinfo += totaltime;
-    timelabel->setText(timeinfo.join(tr("/")));
+	//当前播放时间
+	//player->play();
+	QTime now(0, position / 60000, qRound((position % 60000) / 1000.0));
+	nowtime = now.toString(tr("mm:ss"));
+	QStringList timeinfo;
+	timeinfo += nowtime;
+	timeinfo += totaltime;
+	timelabel->setText(timeinfo.join(tr("/")));
 	if (curPlayModel == MODEL_LAC) return;
-
-    QVector <lrcItem>::iterator it = qLowerBound(lrctitle.begin(),lrctitle.end(),lrcItem(position,""));
+	if (lrctitle.empty()) return;
+	QVector <lrcItem>::iterator it = qLowerBound(lrctitle.begin(), lrctitle.end(), lrcItem(position, ""));
+	if (it == lrctitle.end()) return;
 	QString text = (*it).text;
     if((*it).lrctime==position){
 		lrclabel->setText(text);
@@ -111,22 +117,7 @@ void MusicWidget::updatePosition(qint64 position){
 void MusicWidget::updateNetinfo(){
     //获取歌曲名和歌手
 	qDebug() << curTime.toString();
-    QStringList info;
-    QString author=player->metaData("Author").toString();
-    info += author;
-    QString title =player->metaData("Title").toString();
-    info += title;
-    if (!info.isEmpty())
-        infolabel->setText(info.join(tr("-")));
-    //获取比特率/频率
-    QStringList info2;
-    //int bitrate= player->metaData("AudioBitRate").toInt()/1000;
-    //int rate=player->metaData("SampleRate").toInt()/1000;
-    QString sbitrate =  QString(tr("128kbps"));
-    info2 += sbitrate;
-    QString srate =  QString(tr("44kHz"));
-    info2 += srate;
-    ratelabel->setText(info2.join(tr("|")));
+    
 }
 
 void MusicWidget::createwidgets(){
@@ -215,6 +206,16 @@ void MusicWidget::showNetimg(){
     QScriptValueIterator songlist(sc.property("data").property("songList"));
     songlist.next();
     QString imglink = songlist.value().property("songPicRadio").toString();
+	QString author = songlist.value().property("artistName").toString();
+	QString name = songlist.value().property("songName").toString();
+	infolabel->setText(author + " - " + name);
+	//获取比特率/频率
+	QStringList info2;
+	QString sbitrate = QString(tr("128kbps"));
+	info2 += sbitrate;
+	QString srate = QString(tr("44kHz"));
+	info2 += srate;
+	ratelabel->setText(info2.join(tr("|")));
     qDebug()<<"jpg:"<<imglink<<endl;
     QNetworkAccessManager manager;
     QEventLoop loop;

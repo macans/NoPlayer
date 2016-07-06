@@ -21,7 +21,7 @@ class PlaylistWindow : public QWidget
 {
     Q_OBJECT
 public:
-    explicit PlaylistWindow(QMediaPlaylist *playList,QWidget *parent = 0);
+	explicit PlaylistWindow(QMediaPlaylist *playList, QWidget *parent = 0, int playModel = QMediaPlaylist::Sequential);
 
 signals:
     void	currentItemChanged(QListWidgetItem * current, QListWidgetItem * previous);
@@ -30,7 +30,7 @@ signals:
     void	itemActivated(QListWidgetItem * item);
     void	itemChanged(QListWidgetItem * item);
     void	itemClicked(QListWidgetItem * item);
-    void	itemDoubleClicked(QListWidgetItem * item, bool doubleClicked = false);
+    void	itemDoubleClicked(QListWidgetItem * item, bool doubleClicked = true);
     void	itemEntered(QListWidgetItem * item);
     void	itemPressed(QListWidgetItem * item);
     void	itemSelectionChanged();
@@ -64,9 +64,8 @@ private:
     QList<QListWidgetItem*> searchList;//记录搜索到的item
     bool search_flag = false;
     QMediaPlaylist *playlist;
-    int playBackMode = SEQUENTIAL;
+    int playBackMode;
 
-	bool indexChangeAllowed;
 	bool doubleClicked;
 
 

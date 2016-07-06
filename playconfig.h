@@ -32,6 +32,14 @@
 #define MEDIA_TYPE_MUSIC 0
 #define MEDIA_TYPE_VIDEO 1
 
+#define SIZE_DEFT	0
+#define SIZE_ORIG	1
+#define SIZE_FULL	2
+
+#define ORIG_HEIGHT	600
+#define ORIG_WIDTH	800
+
+
 #include <QString>
 
 struct PlayConfig{
@@ -43,7 +51,7 @@ struct PlayConfig{
 	int playMethod;
 
 	//×ÖÄ»
-	qint64 subDelay;
+	int subDelay;
 	QString subFont;
 	QString subColor;
 
@@ -53,7 +61,8 @@ struct PlayConfig{
 	int contrast;
 
 	//³£¹æ
-	int stopWhenMin;
+	int stopWhileMin;
+	int sizeWhileOpen;
 };
 
 

@@ -67,7 +67,7 @@ public:
 	//自定义函数
     void updateWindowSize();
 	bool isPosInRect(const QPoint &pos, const QRect &rect);
-	void initPlayWidget(int isVideo, int isLocal, QString info = "", QString lrclink = "");
+	void initPlayWidget(int playModel, int isLocal, QString info = "", QString lrclink = "");
 	void savePlayConfig();
 	void savePlayList();
 	void raiseVolume(int step);
@@ -99,6 +99,9 @@ public slots:
 
 	void rateSlowDown();
 	void rateSpeedUp();
+	void setStopWhileMin(bool status);
+	void sizeChanged(int status);
+	void currentMediaChanged(const QMediaContent& media);
 	//搜索
 	void getInfoComplete(bool flag, InfoNetMusic &info);
 

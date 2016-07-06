@@ -4,7 +4,14 @@ SubtitleLabel::SubtitleLabel(QWidget *parent, PlayConfig *config) : QLabel(paren
 {
 	this->subDelay = config->subDelay;
 	this->color = "<font color=" + config->subColor + ">%1</font>";
-	this->setText("sub title");
+    this->setAlignment(Qt::AlignCenter);
+    this->setAttribute(Qt::WA_TranslucentBackground, true);
+    QPalette pa;
+    pa.setColor(QPalette::Background, QColor(0x00,0xff,0x00,0x00));
+    //this->setPalette(pa);
+    //this->setText("HELLO");
+    //QSize sz = this->size();
+    //this->resize(QSize(sz.width(), 20));
 }
 
 void SubtitleLabel::subtitleChanged(QString subName)
@@ -13,6 +20,7 @@ void SubtitleLabel::subtitleChanged(QString subName)
 	QFile file(subName);
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 		subtitle.clear();
+        this->hide();
 		return;
 	}
 	int hBegin, mBegin, sBegin, msBegin;
@@ -64,7 +72,10 @@ void SubtitleLabel::subtitleChanged(QString subName)
 
 void SubtitleLabel::updateSubTitle(qint64 progress)
 {
-	if (subtitle.size() == 0) return;
+    if (subtitle.size() == 0){
+        this->hide();
+        return;
+    }
 	progress += subDelay;
 	QVector<subItem>::iterator it = qLowerBound(subtitle.begin(), subtitle.end(), subItem(0, progress, ""));
 	if (it == subtitle.end()) return;

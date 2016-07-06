@@ -1,16 +1,17 @@
 #include "playlistwindow.h"
 
-PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidget(parent)
+PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList, QWidget *parent, int playModel) : QWidget(parent)
 {
-	listWidget = new QListWidget(this);
 
-    playlist = playList;
+	playBackMode = playModel;
+	playlist = playList;
+	playlist->setPlaybackMode((QMediaPlaylist::PlaybackMode)playBackMode);
+	listWidget = new QListWidget(this);
+   
 	loadPlaylist();
 
 	this->doubleClicked = false;
 
-
-	playlist->setPlaybackMode(QMediaPlaylist::Loop);
 //----布局---------------------------------------
     QHBoxLayout *topLayout = new QHBoxLayout;
     topLayout->addWidget(listWidget);
@@ -51,7 +52,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
     connect(listWidget,SIGNAL(itemSelectionChanged()),this,SIGNAL(itemSelectionChanged()));
 
     connect(delBtn,SIGNAL(clicked(bool)),this,SLOT(removeItems()));
-    connect(clearBtn,SIGNAL(clicked(bool)),listWidget,SLOT(clear()));
+    connect(clearBtn,SIGNAL(clicked(bool)),this,SLOT(clear()));
     connect(search_btn,SIGNAL(clicked(bool)),this,SLOT(searchItem()));
     connect(listWidget,SIGNAL(clicked(QModelIndex)),this,SLOT(clearSearch()));
     connect(listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(setPlaylistIndex(QListWidgetItem*)));
@@ -69,7 +70,7 @@ PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList,QWidget *parent) : QWidg
 void PlaylistWindow::clear()
 {
     listWidget->clear();
-    playlist->clear();
+    bool res = playlist->clear();
     qDebug()<<playlist->currentIndex();
 }
 
@@ -140,15 +141,13 @@ void PlaylistWindow::clearSearch()
 //将行号为row的设置为播放项
 void PlaylistWindow::setItemPlay(int row)
 {
-	if (!indexChangeAllowed || row == -1) return;
-	indexChangeAllowed = false;
+	if (row == -1) return;
 	int cnt = playlist->mediaCount();
     QListWidgetItem *item = listWidget->item(row);
 	emit itemDoubleClicked(item, doubleClicked);
-	doubleClicked = false;
+	doubleClicked = true;
     this->setItemPlayView(item);
     qDebug("setItemPlay %d",row);
-	indexChangeAllowed = true;
 }
 
 //设置播放状态下的样式
@@ -184,7 +183,7 @@ void PlaylistWindow::setPlayMode()
 
     switch(playBackMode) {
     case CUR_ITEM_LOOP:
-        playlist->setPlaybackMode(QMediaPlaylist::Random);
+        playlist->setPlaybackMode(QMediaPlaylist::CurrentItemInLoop);
         playType->setIcon(QIcon(":image/itemloop.ico"));
         playType->setToolTip("单曲循环");
         break;
@@ -210,7 +209,6 @@ void PlaylistWindow::setPlayMode()
 //下一曲
 void PlaylistWindow::next()
 {
-	indexChangeAllowed = true;
     //this->setItemNormalView(listWidget->item(playlist->currentIndex()));
     playlist->next();
 	int index = playlist->currentIndex();
@@ -226,7 +224,7 @@ void PlaylistWindow::next()
 //上一曲
 void PlaylistWindow::previous()
 {
-	indexChangeAllowed = true;
+	
     //this->setItemNormalView(listWidget->item(playlist->currentIndex()));
     playlist->previous();
 	int index = playlist->currentIndex();
@@ -291,7 +289,7 @@ int PlaylistWindow::getMediaType(const QString fileName)
 //从本地添加items
 int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
 {
-	this->indexChangeAllowed = false;
+
     int mediaType;
     bool flag=true;
     for(int i=0;i<addList.length();i++) {
@@ -328,15 +326,14 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
             }
             this->setItemNormalView(item);
             //添加到playlist 并将第一条设置为当前播放item
+			qDebug() << playlist->mediaCount();
             playlist->addMedia(QUrl::fromLocalFile(label));
             if(flag){
                 flag=false;
                 mediaType = type;
                 if(playNow){
-					this->indexChangeAllowed = true;
                     //this->setItemPlay(row);
 					playlist->setCurrentIndex(row);
-					this->indexChangeAllowed = false;
 
                 }else{
                     listWidget->setCurrentItem(item);
@@ -346,7 +343,7 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
             continue;
         }
     }
-	this->indexChangeAllowed = true;
+
 	return mediaType;
 }
 
@@ -354,7 +351,7 @@ int PlaylistWindow::addItemFromLocal(const QStringList &addList,bool playNow)
 //添加网络item
 int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,int id, bool playNow)
 {
-	this->indexChangeAllowed = false;
+
     QListWidgetItem *item = new QListWidgetItem(additem,listWidget);
     int row = listWidget->row(item);
     //添加索引字符
@@ -376,16 +373,14 @@ int PlaylistWindow::addItemFromNet(const QString &additem, const QString &link,i
 
     //添加到playlist 并将第一条设置为当前播放item
     playlist->addMedia(QUrl(link));
-	this->indexChangeAllowed = true;
 //	this->setItemPlay(row);
 	if (playNow){
+		this->doubleClicked = false;
 		playlist->setCurrentIndex(row);
 	}
-	this->indexChangeAllowed = false;
     //qDebug("%d",playlist->currentIndex());
     return MEDIA_TYPE_MUSIC;
 
-	this->indexChangeAllowed = true;
 }
 
 void PlaylistWindow::setPlaylistIndex(QListWidgetItem *item)
@@ -453,15 +448,17 @@ void PlaylistWindow::loadPlaylist()
 		while (it.hasNext())
 		{
 			it.next();
+			locallist.clear();
 			if (it.value().property("is_local").toString() == "1")
 			{
 				qDebug() << "name :" << it.value().property("name").toString();
 				locallist.append(it.value().property("name").toString());
+				addItemFromLocal(locallist, false);
 			}
 			else if (it.value().property("is_local").toString() == "0") {
 				addItemFromNet(it.value().property("name").toString(), it.value().property("link").toString(), it.value().property("id").toInt32(), false);
 			}
 		}
-		addItemFromLocal(locallist, false);
+		
 	}
 }
