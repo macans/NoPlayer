@@ -1,7 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#define API_OF_SEARCH		"http://music.baidu.com/search?key=%1&start=%2&size=5&s=1"
+#define API_OF_SEARCH		"http://music.baidu.com/search?key=%1&start=%2&size=30&s=1"
 #define API_OF_SONGLINK		"http://play.baidu.com/data/music/songlink?songIds=%1&type=m4a,mp3"
 #define API_OF_SONGINFO		"http://play.baidu.com/data/music/songinfo?songIds=%1"
 

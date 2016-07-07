@@ -12,7 +12,7 @@ class ControlWindow : public QWidget
 	Q_OBJECT
 
 public:
-    explicit ControlWindow(QWidget *parent = 0);
+    explicit ControlWindow(PlayConfig *config = 0, QWidget *parent = 0);
     ~ControlWindow();
     //void setVolume(int number1);
      void setHueFUN(int number2);
@@ -38,6 +38,7 @@ signals:
 	void fastforwordMsec(qint64 msec = SRCH_STEP_MIN);
     void controlWindowClosed();
      void sizeChanged(int);
+     void skinChanged(int);
      void minithenpause(bool);
      void fontChanged(QFont newfont);
 	//void fontChanged(QFont newfont);

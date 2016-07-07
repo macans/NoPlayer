@@ -1,7 +1,12 @@
 QLabel{
 font:HanziPen SC;
 }
-
+QLabel#subLabel{
+    text-align:center;
+    height:29px;
+    min-height:29px;
+    max-height:29px;
+}
 QPushButton{
     border:2px solid gray;
     width:30px;
@@ -9,7 +14,18 @@ QPushButton{
     font-size:15px;
     border-radius:5px;
     border-color:#32CD32;
-
+    min-width:25px;
+    max-width:25px;
+}
+QPushButton#Shortcut{
+    border:2px solid gray;
+    width:60px;
+    height:30px;
+    font-size:15px;
+    border-radius:5px;
+    border-color:#32CD32;
+    min-width:25px;
+    max-width:25px;
 }
 QPushButton:hover{
 border:2px solid gray;

@@ -101,6 +101,7 @@ public slots:
 	void rateSpeedUp();
 	void setStopWhileMin(bool status);
 	void sizeChanged(int status);
+    void skinChanged(int skin);
 	void currentMediaChanged(const QMediaContent& media);
 	//ËÑË÷
 	void getInfoComplete(bool flag, InfoNetMusic &info);

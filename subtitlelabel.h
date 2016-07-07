@@ -15,6 +15,7 @@ struct subItem{
 		return msecEnd < b.msecEnd;
 	}
 };
+
 class SubtitleLabel : public QLabel
 {
     Q_OBJECT

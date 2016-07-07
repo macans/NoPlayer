@@ -20,18 +20,21 @@
 #include <QRadioButton>
 #include <QComboBox>
 #include <QMessageBox>
-ControlWindow::ControlWindow(QWidget *parent) :
+ControlWindow::ControlWindow(PlayConfig *config, QWidget *parent) :
 QWidget(parent)
 {
+    this->setWindowIcon(QIcon(":/image/setting.ico"));
+    this->setWindowTitle("Setting");
 	//-------------------------------------------------------
     //1 //tabwidget
     QTabWidget *tabwidget = new QTabWidget();
 
 	QWidget *widget1 = new QWidget();
     QGridLayout *grid1 = new QGridLayout();
-    QLabel *Lmini_pause = new QLabel("Stop");
-    QLabel *Lsize = new QLabel("Size while open");
-    QPushButton *Lshortcut_key = new QPushButton("View shorcut");
+    QLabel *Lmini_pause = new QLabel("STOP WHILE MIN");
+    QLabel *Lsize = new QLabel("SIZE WHILE OPEN");
+    QPushButton *Lshortcut_key = new QPushButton("VIEW SHORTCUT");
+    Lshortcut_key->setObjectName("Shortcut");
     QRadioButton *Cmini_pause=new QRadioButton();
     QComboBox *Csize=new QComboBox();
     //QIcon icon5(":/image/sound.png");
@@ -40,7 +43,13 @@ QWidget(parent)
     Csize->addItem("视频尺寸");
     //QIcon icon7(":/image/sound.png");
     Csize->addItem("全屏");
-
+    Csize->setCurrentIndex(config->sizeWhileOpen);
+    QLabel *skinLabel = new QLabel("SKIN");
+    QComboBox *skinBox = new QComboBox();
+    skinBox->addItem("BLUE");
+    skinBox->addItem("GREEN");
+    skinBox->addItem("RED");
+    skinBox->setCurrentIndex(config->skin);
     /*QLabel *play_pause = new QLabel("播放／暂停 :");
     QLabel *exit = new QLabel("退出:");
     QLabel *slow_down= new QLabel("快进:");
@@ -57,7 +66,9 @@ QWidget(parent)
     grid1->addWidget(Lmini_pause,0,0);
     grid1->addWidget(Lsize, 1,0);
     grid1->addWidget(Csize, 1,1,1,2);
-    grid1->addWidget(Lshortcut_key, 2,0);
+    grid1->addWidget(skinLabel, 2, 0);
+    grid1->addWidget(skinBox, 2,1);
+    grid1->addWidget(Lshortcut_key, 3,0);
 
     /*grid1->addWidget(play_pause,2,1);
     grid1->addWidget(Lplay_pause,2,2);
@@ -160,7 +171,6 @@ QWidget(parent)
 	total->addWidget(tabwidget);
 	this->setLayout(total);
     this->setFixedSize(400, 300);//fix size
-	this->setWindowTitle("控制面板");
 
 
 	//volume
@@ -198,7 +208,7 @@ QWidget(parent)
 
 
     connect(Cmini_pause,SIGNAL(clicked(bool)),this,SIGNAL(minithenpause(bool)));
-
+    connect(skinBox, SIGNAL(currentIndexChanged(int)), this, SIGNAL(skinChanged(int)));
     connect(Lshortcut_key,SIGNAL(clicked(bool)),this,SLOT(showshortcutKey()));
 	//--------------------------------------------------------------
 }

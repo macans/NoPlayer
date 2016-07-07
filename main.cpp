@@ -24,14 +24,7 @@ int main(int argc, char *argv[])
 	QTextCodec::setCodecForLocale(codec);
 	//ControWindow w;
     w.show();
-	QString qss;
-    QFile qssFile(":/default.qss");
-	qssFile.open(QFile::ReadOnly);
-	if (qssFile.isOpen()){
-		qss = QLatin1String(qssFile.readAll());
-		qApp->setStyleSheet(qss);
-		qssFile.close();
-	}
+
 
     return a.exec();
 }

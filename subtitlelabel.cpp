@@ -63,7 +63,7 @@ void SubtitleLabel::subtitleChanged(QString subName)
 			len = str.length();
 		}
 		int pos = temp.text.indexOf('{');
-		temp.text = temp.text.left(pos) + temp.text.right(pos + 6);
+		temp.text = temp.text.left(pos) + temp.text.right(temp.text.length() - pos - 7);
 		subtitle.push_back(temp);
 		file.readLine();
 	}

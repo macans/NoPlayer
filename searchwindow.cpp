@@ -3,7 +3,8 @@
 SearchWindow::SearchWindow(QWidget *parent)
 : QWidget(parent)
 {
-
+    this->setWindowIcon(QIcon(":/image/search.ico"));
+    this->setWindowTitle("Search");
     QNetworkProxy proxy;
 	proxy.setType(QNetworkProxy::Socks5Proxy);
 	proxy.setHostName("127.0.0.1");

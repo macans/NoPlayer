@@ -39,6 +39,9 @@
 #define ORIG_HEIGHT	600
 #define ORIG_WIDTH	800
 
+#define SKIN_BLUE   0
+#define SKIN_GREEN  1
+#define SKIN_RED    2
 
 #include <QString>
 
@@ -63,6 +66,7 @@ struct PlayConfig{
 	//³£¹æ
 	int stopWhileMin;
 	int sizeWhileOpen;
+	int skin;
 };
 
 

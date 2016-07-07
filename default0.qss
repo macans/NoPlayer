@@ -15,8 +15,17 @@ QPushButton{
     font-size:15px;
     border-radius:5px;
     border-color:#00BFFF;
-    min-width:30px;
-    max-width:30px;
+    min-width:25px;
+    max-width:25px;
+}
+
+QPushButton#Shortcut{
+    border:2px solid gray;
+    width:120px;
+    height:30px;
+    font-size:15px;
+    border-radius:5px;
+    border-color:#00BFFF;
 }
 QPushButton:hover{
 border:2px solid gray;

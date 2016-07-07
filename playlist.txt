@@ -2,20 +2,24 @@
 playlist:
 [
 {
+"is_local": "0",
+"name":"张学友 - 吻别",
+"link":"http://yinyueshiting.baidu.com/data2/music/42108098/2433211467849661128.mp3?xcode=476e652c66ce49e69e9cdd6067ee2141",
+"id":"243321"
+},
+{
 "is_local":"1",
-"name":"E:/Taylor Swift/Taylor Swift - A Place in This World.mp3"
+"name":"E:/Adele - Hello.mp3"
+},
+{
+"is_local":"1",
+"name":"E:/test.mkv"
 },
 {
 "is_local": "0",
-"name":"刘德华 - 一起走过的日子",
-"link":"http://yinyueshiting.baidu.com/data2/music/48068506/937197162000128.mp3?xcode=bcfa15352525745a26bdb4a8ac0cec0f",
-"id":"937197"
-},
-{
-"is_local": "0",
-"name":"刘德华 - 谢谢你的爱",
-"link":"http://yinyueshiting.baidu.com/data2/music/42364740/733422975600128.mp3?xcode=898d4cf1cd07bd4fe4d6351b3c1b445d",
-"id":"7334229"
+"name":"陈百强 - 一生何求",
+"link":"http://yinyueshiting.baidu.com/data2/music/42767415/73205391467770461128.mp3?xcode=053ee457e3b865bc0c486914f0acd7b6",
+"id":"7320539"
 },
 {
 "is_local":"1",
@@ -24,38 +28,6 @@ playlist:
 {
 "is_local":"1",
 "name":"E:/test.mkv"
-},
-{
-"is_local":"1",
-"name":"E:/Music/Beyond/海阔天空/Beyond - 海阔天空.mp3"
-},
-{
-"is_local":"1",
-"name":"E:/Music/邓丽君/我只在乎你/邓丽君 - 我只在乎你.mp3"
-},
-{
-"is_local":"1",
-"name":"E:/test.mkv"
-},
-{
-"is_local":"1",
-"name":"E:/Taylor Swift/Taylor Swift - Stay Beautiful.mp3"
-},
-{
-"is_local":"1",
-"name":"E:/test.mkv"
-},
-{
-"is_local":"1",
-"name":"E:/test.mkv"
-},
-{
-"is_local":"1",
-"name":"E:/test.mkv"
-},
-{
-"is_local":"1",
-"name":"E:/Flash/Youtube/Jiang/HK.mp4"
 },
 ]
 }

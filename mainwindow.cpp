@@ -3,6 +3,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QWidget(parent)
 {
+
 	typeAllowed << "mp3" << "mp4" << "mkv" << "flv" << "flac" << "mpg";
 	searchState = false;
 	playlistState = false;
@@ -11,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	menuState = false;
 	curPlayFlag = -1;
 	loadLocalConfig();
+	
 
 	playWidget = NULL;
 	player = new QMediaPlayer(this);
@@ -23,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	//playWidget = new MusicWidget(this, player);
 	player->setVideoOutput((QVideoWidget*)playWidget);
 
-	player->setVolume(50);
+    player->setVolume(50);
 	player->play();
 
 	playlistWindow = new PlaylistWindow(playList);
@@ -57,7 +59,7 @@ MainWindow::MainWindow(QWidget *parent) :
     subLabel->setObjectName("subLabel");
     subLabel->hide();
 
-	controlWindow = new ControlWindow;
+    controlWindow = new ControlWindow(playConfig);
 	//controlWindow;
 	connect(controlWindow, SIGNAL(controlWindowClosed()), this, SLOT(controlButtonClicked()));
 	connect(controlWindow, SIGNAL(fontChanged(QFont)), this, SLOT(fontChanged(QFont)));
@@ -69,7 +71,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(controlWindow, SIGNAL(rateDefault()), this, SLOT(initPlaybackRate()));
 
 	connect(controlWindow, SIGNAL(sizeChanged(int)), this, SLOT(sizeChanged(int)));
-
+    connect(controlWindow, SIGNAL(skinChanged(int)), this, SLOT(skinChanged(int)));
 	connect(controlWindow, SIGNAL(minithenpause(bool)), this, SLOT(setStopWhileMin(bool)));
 	connect(controlWindow, SIGNAL(rewindSec(qint64)), this, SLOT(rewind(qint64)));
 	connect(controlWindow, SIGNAL(rewindMsec(qint64)), this, SLOT(rewind(qint64)));
@@ -107,6 +109,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	this->setMouseTracking(true);
 	this->mousePressed = false;
+    this->setWindowIcon(QIcon(":/image/logo1.png"));
 	this->setWindowTitle("NoPlayer");
 	
 	this->resize(QSize(596, 443));
@@ -139,6 +142,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(about_action, &QAction::triggered, this, &MainWindow::showAbout);
 	connect(quit_action, &QAction::triggered, this, &MainWindow::quitMedia);
 
+	skinChanged(playConfig->skin);
 }
 
 MainWindow::~MainWindow()
@@ -191,7 +195,9 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 		controls->show();
 	}
 	else{
-        controls->hide();
+		if (curPlayFlag == MEDIA_TYPE_VIDEO){
+			controls->hide();
+		}
 	}
 }
 
@@ -335,6 +341,7 @@ void MainWindow::loadLocalConfig()
 		playConfig->subColor = color;
 	}
 	playConfig->subFont = val.property("sub_font").toString();
+	playConfig->skin = val.property("skin").toInt32();
 }
 
 void MainWindow::initPlayWidget(int playModel, int isLocal, QString info, QString lrclink)
@@ -342,7 +349,10 @@ void MainWindow::initPlayWidget(int playModel, int isLocal, QString info, QStrin
 	if (!isLocal){
 		delete playWidget;
 		playWidget = new MusicWidget(info, lrclink, this, player);
-		((MusicWidget*)playWidget)->updateDuration(player->duration());
+        connect(player, SIGNAL(durationChanged(qint64)), ((MusicWidget*)playWidget), SLOT(updateDuration(qint64)));
+        ((MusicWidget*)playWidget)->updateDuration(player->duration());
+		curPlayFlag = MEDIA_TYPE_MUSIC;
+		controls->show();
 		subLabel->hide();
 	}
 	else{
@@ -351,12 +361,14 @@ void MainWindow::initPlayWidget(int playModel, int isLocal, QString info, QStrin
 		if (playModel == MEDIA_TYPE_MUSIC){
 			playWidget = new MusicWidget(this, player);
 			curPlayFlag = MEDIA_TYPE_MUSIC;
+			controls->show();
 			subLabel->hide();
 		}
 		else{
 			playWidget = new VideoWidget(this);
 			player->setVideoOutput((QVideoWidget*)playWidget);
 			curPlayFlag = MEDIA_TYPE_VIDEO;
+			controls->hide();
 			subLabel->show();
 		}
 	}
@@ -438,6 +450,7 @@ void MainWindow::savePlayConfig()
 	config += "\"sub_color\": \"" + playConfig->subColor + "\",\n";
 	config += "\"stop_while_min\": " + QString::number(playConfig->stopWhileMin) + ",\n";
 	config += "\"size_while_open\": \"" + QString::number(playConfig->sizeWhileOpen) + "\",\n";
+	config += "\"skin\" : \"" + QString::number(playConfig->skin) + "\", \n";
 	config += "}";
 	configFile->write(config.toLocal8Bit());
 	configFile->close();
@@ -655,7 +668,6 @@ void MainWindow::initLayout()
 	delete controlLayout;
 	delete subLabelLayout;
 	delete displayLayout;
-	delete grid;
 	delete layout;
 
 
@@ -675,7 +687,7 @@ void MainWindow::initLayout()
     grid->addLayout(controlLayout, 79, 19, 20, 60, Qt::AlignTop);*/
     layout = new QVBoxLayout;
     layout->setMargin(0);
-    layout->addLayout(displayLayout, 3);
+    layout->addLayout(displayLayout, 4);
     layout->addLayout(subLabelLayout);
     layout->addLayout(controlLayout);
     //grid->setMargin(0);
@@ -700,7 +712,27 @@ void MainWindow::setStopWhileMin(bool status)
 
 void MainWindow::sizeChanged(int status)
 {
-	playConfig->sizeWhileOpen = status;
+    playConfig->sizeWhileOpen = status;
+}
+
+void MainWindow::skinChanged(int skin)
+{
+    playConfig->skin = skin;
+	QString name = ":/default";
+	name.append(QString::number(skin));
+	name.append(".qss");
+    QString qss;
+    QFile qssFile(name);
+    qssFile.open(QFile::ReadOnly);
+    if (qssFile.isOpen()){
+        qss = QLatin1String(qssFile.readAll());
+        this->setStyleSheet(qss);
+        controls->setStyleSheet(qss);
+        controlWindow->setStyleSheet(qss);
+        playlistWindow->setStyleSheet(qss);
+        searchWindow->setStyleSheet(qss);
+        qssFile.close();
+    }
 }
 
 void MainWindow::currentMediaChanged(const QMediaContent& media)

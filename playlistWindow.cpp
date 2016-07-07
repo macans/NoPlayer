@@ -3,6 +3,8 @@
 PlaylistWindow::PlaylistWindow(QMediaPlaylist *playList, QWidget *parent, int playModel) : QWidget(parent)
 {
 
+    this->setWindowTitle("Playlist");
+    this->setWindowIcon(QIcon(":/image/playlist.ico"));
 	playBackMode = playModel;
 	playlist = playList;
 	playlist->setPlaybackMode((QMediaPlaylist::PlaybackMode)playBackMode);

@@ -11,7 +11,7 @@
         <file>image/ic8.png</file>
         <file>image/ic9.png</file>
         <file>image/logo.png</file>
-        <file>default.qss</file>
+        <file>default0.qss</file>
         <file>image/sound.png</file>
         <file>image/subtitle.png</file>
         <file>image/video.png</file>
@@ -60,5 +60,8 @@
         <file>image/search.ico</file>
         <file>image/seq.png</file>
         <file>image/video.ico</file>
+        <file>image/playlist.ico</file>
+        <file>image/setting.ico</file>
+        <file>image/logo1.png</file>
     </qresource>
 </RCC>
